@@ -120,6 +120,11 @@ extension CartViewController: CartViewControllerDelegate {
     func closeVC(text: String) {
         mainView?.adresTextField?.text = text
         mainView?.adresTextField?.reloadInputViews()
+        getTotalCoast(adress: adress) {
+            self.mainView?.deliveryOrderLabel?.text = "\(adressCoast) ₽"
+            self.mainView?.summLabel?.text = "\(totalCoast) ₽"
+            self.mainView?.createOrderButton?.setTitle("Оформить заказ за \(totalCoast) ₽", for: .normal)
+        }
     }
     
     func showAdresVC() {
