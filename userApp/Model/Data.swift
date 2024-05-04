@@ -7,8 +7,6 @@
 
 import Foundation
 
-var orderArr = [(String, Int)]()
-
 struct Dish: Codable {
     let id: Int
     let name: String
@@ -19,4 +17,9 @@ struct Dish: Codable {
 
 struct DishesResponse: Codable {
     let dishes: [Dish]
+}
+
+enum methodButton {
+    case plus
+    case minus
 }

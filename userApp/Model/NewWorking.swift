@@ -93,3 +93,48 @@ func reload(address: String, controller: UIViewController) {
         }
     }
 }
+
+
+var totalCoast = 0
+var adressCoast = 0
+
+func getTotalCoast(adress: String?, completion: @escaping () -> Void) {
+    let headers: HTTPHeaders = [.accept("application/json")]
+    
+    var menu = ""
+    let lastIndex = orderArr.last?.0
+
+    for (index, key, _, _) in orderArr {
+        let count = key
+        menu.append("\(index) - \(key)")
+        if index != lastIndex {
+            menu.append(", ")
+        }
+    }
+    let adresText: String = adress ?? ""
+    AF.request("http://arbamarket.ru/api/v1/main/get_total_cost/?menu=\(menu)&address=\(String(describing: adresText))", method: .get, headers: headers).responseJSON { response in
+        
+        switch response.result {
+        case .success(let value):
+            if let json = value as? [String: Any] {
+                if let totalCost = json["total_cost"] as? Int,
+                   let addressCost = json["address_cost"] as? Int {
+                    print(totalCost)
+                    totalCoast = totalCost
+                    adressCoast = addressCost
+                    
+                    print(adressCoast)
+                }
+            } else {
+                print("Invalid JSON format")
+            }
+            
+        case .failure(let error):
+            print("Request failed with error:", error)
+        }
+        
+        // Вызываем замыкание после завершения запроса
+        completion()
+    }
+}
+

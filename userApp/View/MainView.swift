@@ -17,6 +17,7 @@ class MainView: UIView {
     var activeButton, showCartButton: UIButton?
     var collectionView: UICollectionView?
     var categoryArr: [(Dish, UIImage)] = []
+    var cleanCategoryArr = [String]()
 
     
     //MARK: -Init
@@ -75,6 +76,7 @@ class MainView: UIView {
             collection.delegate = self
             collection.dataSource = self
             collection.showsVerticalScrollIndicator = false
+            collection.backgroundColor = .white
             collection.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 80, right: 0)
             return collection
         }()
@@ -84,6 +86,7 @@ class MainView: UIView {
             let button = UIButton(type: .system)
             button.setTitle("Корзина", for: .normal)
             button.tintColor = .white
+            button.alpha = 0
             button.addTarget(self, action: #selector(showCart), for: .touchUpInside)
             button.backgroundColor = UIColor(red: 248/255, green: 102/255, blue: 6/255, alpha: 1)
             button.titleLabel?.font = .systemFont(ofSize: 20, weight: .semibold)
@@ -150,6 +153,7 @@ class MainView: UIView {
             let button = UIButton(type: .system)
             let cleanCategory = category.components(separatedBy: ". ").last ?? ""
             button.setTitle(cleanCategory, for: .normal)
+            cleanCategoryArr.append(cleanCategory)
             button.tag = tag
             topCategoriesScrollView?.addSubview(button)
             button.titleLabel?.font = .systemFont(ofSize: 18, weight: .regular)

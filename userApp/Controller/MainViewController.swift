@@ -13,16 +13,27 @@ protocol MainViewControllerDelegate: AnyObject {
     func showVC(indexPatch: Int)
     func addToCart(button: UIButton)
     func showCart()
+    func closeVC()
 }
 
 class MainViewController: UIViewController {
     
     var mainView: MainView?
     
+    
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.isNavigationBarHidden = true
+        if orderArr.count != 0 {
+            UIView.animate(withDuration: 0.2) {
+                self.mainView?.showCartButton?.alpha = 100
+            }
+        } else {
+            mainView?.showCartButton?.alpha = 0
+        }
     }
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,6 +42,7 @@ class MainViewController: UIViewController {
         self.view = mainView
         
         getDishes {
+            self.mainView?.collectionView?.reloadData()
             self.mainView?.settingsScrollView()
         }
 
@@ -39,10 +51,19 @@ class MainViewController: UIViewController {
 }
 
 extension MainViewController: MainViewControllerDelegate {
+    func closeVC() {
+        if orderArr.count == 0 {
+            mainView?.showCartButton?.alpha = 0
+            mainView?.showCartButton?.isUserInteractionEnabled = false
+        }
+    }
+    
     
     func showCart() {
         let vc = CartViewController()
-        navigationController?.pushViewController(vc, animated: true)
+        vc.delegate = self
+        self.present(vc, animated: true)
+        //navigationController?.pushViewController(vc, animated: true)
     }
     
     func addToCart(button: UIButton) {
@@ -51,9 +72,9 @@ extension MainViewController: MainViewControllerDelegate {
         if let existingIndex = orderArr.firstIndex(where: { $0.0 == mainView?.categoryArr[button.tag].0.name }) {
             orderArr[existingIndex].1 += 1
         } else {
-            orderArr.append((mainView!.categoryArr[button.tag].0.name, 1))
+            orderArr.append((mainView!.categoryArr[button.tag].0.name, 1, mainView!.categoryArr[button.tag].1, mainView!.categoryArr[button.tag].0.price))
         }
-        
+
         UIView.animate(withDuration: 0.4) {
             button.tintColor = .white
             button.backgroundColor = .systemGreen
@@ -64,7 +85,14 @@ extension MainViewController: MainViewControllerDelegate {
                 button.backgroundColor = originalColor
             }
         }
-        print(orderArr)
+        UIView.animate(withDuration: 0.5) {
+            self.mainView?.showCartButton?.alpha = 100
+            self.mainView?.showCartButton?.isUserInteractionEnabled = true
+        }
+        getTotalCoast(adress: adress) {
+            print(1)
+        }
+        
     }
     
     func showVC(indexPatch: Int) {

@@ -7,12 +7,14 @@
 
 import UIKit
 
+var adress = ""
+var phone = ""
+
 class AdresViewController: UIViewController {
     
     var closeView: UIView?
     var adressTextField: UITextField?
     var closeButton: UIButton?
-    var adress = ""
     var adressArr = [String]()
     var tableView: UITableView?
     weak var delegate: CartViewControllerDelegate?
@@ -119,9 +121,13 @@ class AdresViewController: UIViewController {
         dismiss(animated: true)
     }
     
+    deinit {
+        delegate?.reloadLabels(adress: adress)
+    }
+    
 }
 
-//СДЕЛАТЬ МЕТОД ПОЛУЧЕНИЯ ЦЕНЫ 
+
 
 extension AdresViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
