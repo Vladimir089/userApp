@@ -20,6 +20,8 @@ class CartView: UIView {
     var noTovarInCart: UILabel?
     var closeView: UIView?
     var errorLabel: UILabel?
+    var segmentedControl: UISegmentedControl?
+    
     
     var countOrderLabel, summCountOrderLabel, deliveryOrderLabel, summLabel: UILabel?
     var deliveryLabel, itogLabel: UILabel?
@@ -45,13 +47,31 @@ class CartView: UIView {
         let gesture = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
         addGestureRecognizer(gesture)
         
+        segmentedControl = {
+            let items = ["Доставка", "В кафе"]
+            let segmented = UISegmentedControl(items: items)
+            segmented.selectedSegmentIndex = 0
+            segmented.tintColor = UIColor.backElement
+            segmented.selectedSegmentTintColor = .backElement
+            let textAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black, NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16)]
+                segmented.setTitleTextAttributes(textAttributes, for: .normal)
+            let selectedTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black, NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 16)]
+                segmented.setTitleTextAttributes(selectedTextAttributes, for: .selected)
+            return segmented
+        }()
+        addSubview(segmentedControl ?? UISegmentedControl())
+        
+        scrollView.showsVerticalScrollIndicator = false
+        
+        scrollView.addSubview(contentView)
+        
         topView = {
             let view = UIView()
             view.backgroundColor = .backElement
             view.layer.cornerRadius = 10
             return view
         }()
-        addSubview(topView ?? UIView())
+        scrollView.addSubview(topView ?? UIView())
         
         phoneTextField = {
             let textField = UITextField()
@@ -60,14 +80,14 @@ class CartView: UIView {
             textField.keyboardType = .phonePad
             let leftLabel = UILabel()
             leftLabel.text = "Номер телефона "
-            leftLabel.textColor = .black
+            leftLabel.textColor = UIColor(red: 182/255, green: 182/255, blue: 182/255, alpha: 1)
             textField.layer.cornerRadius = 5
             leftLabel.font = .systemFont(ofSize: 18, weight: .regular)
             textField.leftView = leftLabel
+            textField.textColor = .black
             textField.leftViewMode = .always
             textField.delegate = self
             textField.text = phone
-            textField.placeholder = "+79222524965"
             return textField
         }()
         topView?.addSubview(phoneTextField ?? UITextField())
@@ -86,21 +106,18 @@ class CartView: UIView {
             textField.layer.cornerRadius = 5
             let leftLabel = UILabel()
             leftLabel.text = "Адрес "
-            leftLabel.textColor = .black
+            leftLabel.textColor = UIColor(red: 182/255, green: 182/255, blue: 182/255, alpha: 1)
             textField.delegate = self
             leftLabel.font = .systemFont(ofSize: 18, weight: .regular)
             textField.leftView = leftLabel
+            textField.textColor = .black
             textField.leftViewMode = .always
             textField.text = adress
-            textField.placeholder = "Кошевого, 14, Учкекен"
             return textField
         }()
         topView?.addSubview(adresTextField ?? UITextField())
         
         addSubview(scrollView )
-        scrollView.showsVerticalScrollIndicator = false
-        
-        scrollView.addSubview(contentView)
         
         collectionView = {
             let layout = UICollectionViewFlowLayout()
@@ -109,6 +126,7 @@ class CartView: UIView {
             let collection = UICollectionView(frame: frame, collectionViewLayout: layout)
             collection.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "1")
             collection.isScrollEnabled = false
+            collection.backgroundColor = .white
             collection.delegate = self
             collection.dataSource = self
             collection.showsVerticalScrollIndicator = false
@@ -190,11 +208,36 @@ class CartView: UIView {
     
     func createContraints() {
         
-        topView?.snp.makeConstraints({ make in
+        segmentedControl?.snp.makeConstraints({ make in
             make.left.right.equalToSuperview().inset(15)
             make.top.equalTo(safeAreaLayoutGuide.snp.top).inset(30)
+            make.height.equalTo(44)
+        })
+        
+        scrollView.snp.makeConstraints({ make in
+            make.left.right.equalToSuperview().inset(15)
+            make.bottom.equalToSuperview()
+            make.top.equalTo((segmentedControl ?? UIView()).snp.bottom).inset(-15)
+        })
+        
+        contentView.snp.makeConstraints({ make in
+            make.edges.equalToSuperview()
+            make.width.equalToSuperview()
+            make.height.equalTo(scrollView.frame.height + CGFloat(orderArr.count * 110))
+        })
+        
+        topView?.snp.makeConstraints({ make in
+            make.left.right.equalToSuperview()
+            make.top.equalTo(scrollView.snp.top).inset(15)
             make.height.equalTo(100)
         })
+        
+        collectionView?.snp.makeConstraints({ make in
+            make.left.right.equalToSuperview()
+            make.height.equalTo(orderArr.count * 100)
+            make.top.equalTo((topView ?? UIView()).snp.bottom).inset(-30)
+        })
+        
         
         phoneTextField?.snp.makeConstraints({ make in
             make.left.right.equalToSuperview().inset(15)
@@ -214,23 +257,7 @@ class CartView: UIView {
             make.height.equalTo(50)
         })
         
-        scrollView.snp.makeConstraints({ make in
-            make.left.right.equalToSuperview().inset(15)
-            make.bottom.equalToSuperview()
-            make.top.equalTo((topView ?? UIView()).snp.bottom).inset(-15)
-        })
-        
-        contentView.snp.makeConstraints({ make in
-            make.edges.equalToSuperview()
-            make.width.equalToSuperview()
-            make.height.equalTo(scrollView.frame.height + CGFloat(orderArr.count * 110))
-        })
-        
-        collectionView?.snp.makeConstraints({ make in
-            make.left.right.equalToSuperview()
-            make.height.equalTo(orderArr.count * 100)
-            make.top.equalToSuperview()
-        })
+    
         
         
         if orderArr.count != 0 {
@@ -396,7 +423,7 @@ class CartView: UIView {
         UIView.animate(withDuration: 0.5) { [self] in
             contentView.isUserInteractionEnabled = true
             contentView.snp.updateConstraints({ make in
-                make.height.equalTo(250 + CGFloat(orderArr.count * 110))
+                make.height.equalTo(400 + CGFloat(orderArr.count * 110))
             })
             collectionView?.snp.updateConstraints({ make in
                 make.height.equalTo(orderArr.count * 110)

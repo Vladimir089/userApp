@@ -10,15 +10,18 @@ var allDishes: [(Dish, UIImage)] = []
 
 protocol MainViewControllerDelegate: AnyObject {
     func reloadTable(category: String)
-    func showVC(indexPatch: Int)
-    func addToCart(button: UIButton)
+    func showVC(currentItem: (Dish, UIImage))
+    func addToCart(button: UIButton, currentItem: (Dish, UIImage))
     func showCart()
     func closeVC()
+    func updateSelectedCategoryButton(with category: String)
+    func endScroll()
 }
 
 class MainViewController: UIViewController {
     
     var mainView: MainView?
+    var isLoad = false
     
     
     
@@ -44,6 +47,7 @@ class MainViewController: UIViewController {
         getDishes {
             self.mainView?.collectionView?.reloadData()
             self.mainView?.settingsScrollView()
+    
         }
 
     }
@@ -51,13 +55,42 @@ class MainViewController: UIViewController {
 }
 
 extension MainViewController: MainViewControllerDelegate {
+    func endScroll() {
+        isLoad = false
+    }
+    
     func closeVC() {
         if orderArr.count == 0 {
             mainView?.showCartButton?.alpha = 0
             mainView?.showCartButton?.isUserInteractionEnabled = false
         }
+        self.mainView?.showCartButton?.setTitle("Корзина \(totalCoast) ₽", for: .normal)
     }
     
+    func updateSelectedCategoryButton(with category: String) {
+        if isLoad == true {
+            return
+        }
+        
+        for subview in mainView?.topCategoriesScrollView?.subviews ?? [] {
+            if let button = subview as? UIButton, let buttonText = button.titleLabel?.text {
+                button.tintColor = UIColor(red: 182/255, green: 182/255, blue: 182/255, alpha: 1)
+                
+                if buttonText == category {
+                    UIView.animate(withDuration: 0.3) {
+                        button.tintColor = .black
+                    }
+                    if !mainView!.topCategoriesScrollView!.bounds.contains(button.frame) {
+                        mainView!.topCategoriesScrollView!.scrollRectToVisible(button.frame, animated: true)
+                    }
+                }
+            }
+        }
+    }
+
+
+    
+
     
     func showCart() {
         let vc = CartViewController()
@@ -66,13 +99,13 @@ extension MainViewController: MainViewControllerDelegate {
         //navigationController?.pushViewController(vc, animated: true)
     }
     
-    func addToCart(button: UIButton) {
+    func addToCart(button: UIButton, currentItem: (Dish, UIImage)) {
         let originalColor = button.backgroundColor
         let originalColorToText = button.tintColor
-        if let existingIndex = orderArr.firstIndex(where: { $0.0 == mainView?.categoryArr[button.tag].0.name }) {
+        if let existingIndex = orderArr.firstIndex(where: { $0.0 == currentItem.0.name }) {
             orderArr[existingIndex].1 += 1
         } else {
-            orderArr.append((mainView!.categoryArr[button.tag].0.name, 1, mainView!.categoryArr[button.tag].1, mainView!.categoryArr[button.tag].0.price))
+            orderArr.append((currentItem.0.name, 1, currentItem.1, currentItem.0.price))
         }
 
         UIView.animate(withDuration: 0.4) {
@@ -90,28 +123,44 @@ extension MainViewController: MainViewControllerDelegate {
             self.mainView?.showCartButton?.isUserInteractionEnabled = true
         }
         getTotalCoast(adress: adress) {
-            print(1)
+            self.mainView?.showCartButton?.setTitle("Корзина \(totalCoast) ₽", for: .normal)
         }
         
     }
     
-    func showVC(indexPatch: Int) {
+    func showVC(currentItem: (Dish, UIImage)) {
         let vc = DetailViewController()
         vc.delegate = self
-        vc.index = indexPatch
+        vc.index = currentItem
         let exitArr: [(Dish, UIImage)] = []
         vc.categoryArr = mainView?.categoryArr ?? exitArr
         self.present(vc, animated: true)
     }
     
     
-    func reloadTable(category: String) { 
-        mainView?.categoryArr.removeAll()
-        for i in allDishes {
-            if i.0.category == category {
-                mainView?.categoryArr.append(i)
+    func reloadTable(category: String) {
+        isLoad = true
+        for subview in mainView?.topCategoriesScrollView?.subviews ?? [] {
+            if let button = subview as? UIButton, let buttonText = button.titleLabel?.text {
+                // Устанавливаем цвет по умолчанию для всех кнопок
+                button.tintColor = UIColor(red: 182/255, green: 182/255, blue: 182/255, alpha: 1)
+                
+                if buttonText == category {
+                    // Анимируем изменение цвета только для выбранной категории
+                    UIView.animate(withDuration: 0.3) {
+                        button.tintColor = .black
+                    }
+                }
             }
         }
-        mainView?.collectionView?.reloadData()
+        if let sectionIndex = mainView?.cleanCategoryArr.firstIndex(of: category) {
+            if sectionIndex < mainView?.collectionView?.numberOfSections ?? 0 {
+                let indexPath = IndexPath(item: 0, section: sectionIndex)
+                mainView?.collectionView?.scrollToItem(at: indexPath, at: .top, animated: true)
+            }
+        }
+        
     }
+    
+
 }

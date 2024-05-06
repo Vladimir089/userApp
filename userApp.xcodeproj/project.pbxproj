@@ -16,6 +16,7 @@
 		15D133652BE41BBE00BF671D /* CartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D133642BE41BBE00BF671D /* CartViewController.swift */; };
 		15D133692BE41BE100BF671D /* CartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D133682BE41BE100BF671D /* CartView.swift */; };
 		15D1336B2BE42E6200BF671D /* AdresViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D1336A2BE42E6200BF671D /* AdresViewController.swift */; };
+		15D1336D2BE91EBD00BF671D /* SectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D1336C2BE91EBD00BF671D /* SectionHeaderView.swift */; };
 		15F1D9172BE3CFEC000020B9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F1D9162BE3CFEC000020B9 /* AppDelegate.swift */; };
 		15F1D9192BE3CFEC000020B9 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F1D9182BE3CFEC000020B9 /* SceneDelegate.swift */; };
 		15F1D9202BE3CFEE000020B9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 15F1D91F2BE3CFEE000020B9 /* Assets.xcassets */; };
@@ -33,6 +34,7 @@
 		15D133642BE41BBE00BF671D /* CartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartViewController.swift; sourceTree = "<group>"; };
 		15D133682BE41BE100BF671D /* CartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartView.swift; sourceTree = "<group>"; };
 		15D1336A2BE42E6200BF671D /* AdresViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdresViewController.swift; sourceTree = "<group>"; };
+		15D1336C2BE91EBD00BF671D /* SectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHeaderView.swift; sourceTree = "<group>"; };
 		15F1D9132BE3CFEB000020B9 /* userApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = userApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		15F1D9162BE3CFEC000020B9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		15F1D9182BE3CFEC000020B9 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -105,6 +107,7 @@
 				15D133672BE41BCA00BF671D /* Cart */,
 				15D133572BE3E19200BF671D /* MainViewController.swift */,
 				15D133622BE40D1300BF671D /* DetailViewController.swift */,
+				15D1336C2BE91EBD00BF671D /* SectionHeaderView.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -219,6 +222,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				15D1336D2BE91EBD00BF671D /* SectionHeaderView.swift in Sources */,
 				15D133692BE41BE100BF671D /* CartView.swift in Sources */,
 				15D1335E2BE3E93800BF671D /* NewWorking.swift in Sources */,
 				15D133582BE3E19200BF671D /* MainViewController.swift in Sources */,

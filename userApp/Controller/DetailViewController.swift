@@ -14,7 +14,8 @@ class DetailViewController: UIViewController {
     var titleLabel: UILabel?
     var addToCartButton: UIButton?
     
-    var index = 0
+    var index: (Dish, UIImage)?
+
     var categoryArr: [(Dish, UIImage)] = []
     weak var delegate: MainViewControllerDelegate?
 
@@ -35,7 +36,7 @@ class DetailViewController: UIViewController {
         view.addSubview(closeView ?? UIView())
         
         imageView = {
-            let image = categoryArr[index].1
+            let image = index?.1
             let imageView = UIImageView(image: image)
             imageView.layer.cornerRadius = 15
             imageView.clipsToBounds = true
@@ -45,7 +46,7 @@ class DetailViewController: UIViewController {
         
         titleLabel = {
             let label = UILabel()
-            label.text = categoryArr[index].0.name
+            label.text = index?.0.name
             label.textColor = .black
             label.textAlignment = .left
             label.font = .systemFont(ofSize: 27, weight: .semibold)
@@ -56,12 +57,12 @@ class DetailViewController: UIViewController {
         
         addToCartButton = {
             let button = UIButton(type: .system)
-            button.setTitle("В козину за \(categoryArr[index].0.price) ₽", for: .normal)
+            let text: Int = index?.0.price ?? 0
+            button.setTitle("В козину за \(text) ₽", for: .normal)
             button.tintColor = .white
             button.backgroundColor = UIColor(red: 248/255, green: 102/255, blue: 6/255, alpha: 1)
             button.titleLabel?.font = .systemFont(ofSize: 20, weight: .semibold)
             button.layer.cornerRadius = 30
-            button.tag = index
             button.addTarget(self, action: #selector(add), for: .touchUpInside)
             return button
         }()
@@ -97,7 +98,7 @@ class DetailViewController: UIViewController {
     }
     
     @objc func add() {
-        delegate?.addToCart(button: addToCartButton ?? UIButton())
+        delegate?.addToCart(button: addToCartButton ?? UIButton(), currentItem: index!)
     }
 
 }

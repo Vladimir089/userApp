@@ -10,7 +10,6 @@ import SnapKit
 
 class MainView: UIView {
     
-    var profileButton: UIButton?
     var segmentedControl: UISegmentedControl?
     var topCategoriesScrollView: UIScrollView?
     var delegate: MainViewControllerDelegate?
@@ -18,6 +17,7 @@ class MainView: UIView {
     var collectionView: UICollectionView?
     var categoryArr: [(Dish, UIImage)] = []
     var cleanCategoryArr = [String]()
+    var isScrolling: Bool = false
 
     
     //MARK: -Init
@@ -35,34 +35,14 @@ class MainView: UIView {
     //MARK: -Set elements
     
     func createElement() {
-        profileButton = {
-            let button = UIButton(type: .system)
-            button.setImage(.personFill, for: .normal)
-            button.backgroundColor = .backElement
-            button.tintColor = .black
-            button.layer.cornerRadius = 10
-            return button
-        }()
-        addSubview(profileButton ?? UIButton())
+       
         
-        segmentedControl = {
-            let items = ["Доставка", "В кафе"]
-            let segmented = UISegmentedControl(items: items)
-            segmented.selectedSegmentIndex = 0
-            segmented.tintColor = UIColor.backElement
-            segmented.selectedSegmentTintColor = .backElement
-            let textAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black, NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16)]
-                segmented.setTitleTextAttributes(textAttributes, for: .normal)
-            let selectedTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black, NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 16)]
-                segmented.setTitleTextAttributes(selectedTextAttributes, for: .selected)
-            return segmented
-        }()
-        addSubview(segmentedControl ?? UISegmentedControl())
         
         topCategoriesScrollView = {
             let scroll = UIScrollView()
             scroll.showsVerticalScrollIndicator = false
             scroll.showsHorizontalScrollIndicator = false
+            scroll.delegate = self
             return scroll
         }()
         addSubview(topCategoriesScrollView ?? UIScrollView())
@@ -78,13 +58,14 @@ class MainView: UIView {
             collection.showsVerticalScrollIndicator = false
             collection.backgroundColor = .white
             collection.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 80, right: 0)
+            collection.register(SectionHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "SectionHeaderView")
             return collection
         }()
         addSubview(collectionView ?? UICollectionView())
         
         showCartButton = {
             let button = UIButton(type: .system)
-            button.setTitle("Корзина", for: .normal)
+            button.setTitle("Корзина \(totalCoast) ₽", for: .normal)
             button.tintColor = .white
             button.alpha = 0
             button.addTarget(self, action: #selector(showCart), for: .touchUpInside)
@@ -101,23 +82,11 @@ class MainView: UIView {
     //MARK: -Set constraints
     
     func createConstraints() {
-        profileButton?.snp.makeConstraints({ make in
-            make.height.width.equalTo(44)
-            make.left.equalToSuperview().inset(15)
-            make.top.equalTo(safeAreaLayoutGuide.snp.top).inset(5)
-        })
-        
-        segmentedControl?.snp.makeConstraints({ make in
-            make.left.equalTo((profileButton ?? UIButton()).snp.right).inset(-15)
-            make.right.equalToSuperview().inset(15)
-            make.height.equalTo(44)
-            make.top.equalTo((profileButton ?? UIButton()).snp.top)
-        })
         
         topCategoriesScrollView?.snp.makeConstraints({ make in
             make.height.equalTo(42)
             make.left.right.equalToSuperview().inset(15)
-            make.top.equalTo((profileButton ?? UIButton()).snp.bottom)
+            make.top.equalTo(safeAreaLayoutGuide.snp.top)
         })
         
         collectionView?.snp.makeConstraints({ make in
@@ -145,6 +114,11 @@ class MainView: UIView {
                 categories.append(category)
             }
         }
+
+        for i in allDishes {
+           categoryArr.append(i)
+            print(i)
+        }
         
         var previousButton: UIButton? = nil
         var totalWidth: CGFloat = 0
@@ -162,12 +136,6 @@ class MainView: UIView {
             let buttonWidth = button.intrinsicContentSize.width
             totalWidth += buttonWidth + buttonSpacing
             button.addTarget(self, action: #selector(changeCategory(button: )), for: .touchUpInside)
-            if previousButton == nil {
-                button.tintColor = .black
-                activeButton = button
-                delegate?.reloadTable(category: "1. Роллы")
-                activeButton?.isUserInteractionEnabled = false
-            }
             button.snp.makeConstraints { make in
                 make.centerY.equalToSuperview()
                 if let previousButton = previousButton {
@@ -179,6 +147,7 @@ class MainView: UIView {
             }
             previousButton = button
         }
+        collectionView?.reloadData()
         topCategoriesScrollView?.contentSize = CGSize(width: totalWidth, height: 42)
     }
     
@@ -187,11 +156,9 @@ class MainView: UIView {
         activeButton?.tintColor = UIColor(red: 182/255, green: 182/255, blue: 182/255, alpha: 1)
         activeButton?.isUserInteractionEnabled = true
         button.tintColor = .black
-        button.isUserInteractionEnabled = false
         activeButton = button
         let text: String = button.titleLabel?.text ?? ""
-        let category = "\(button.tag). \(text)"
-        delegate?.reloadTable(category: category)
+        delegate?.reloadTable(category: text)
     }
     
     @objc func showCart() {
@@ -200,19 +167,69 @@ class MainView: UIView {
     
 }
 
+extension MainView: UIScrollViewDelegate {
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+           if scrollView == collectionView {
+               isScrolling = true
+           }
+       }
+
+       func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+           if scrollView == collectionView {
+               isScrolling = false
+           }
+       }
+}
 
 extension MainView: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSize(width: collectionView.bounds.width, height: 50) // Вы можете установить здесь желаемую высоту заголовка
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+
+        guard collectionView == self.collectionView else { return }
+        let section = indexPath.section
+        let category = cleanCategoryArr[section]
+        delegate?.updateSelectedCategoryButton(with: category)
+    }
+    
+    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        delegate?.endScroll()
+       }
+    
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        guard let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "SectionHeaderView", for: indexPath) as? SectionHeaderView else {
+            fatalError("Failed to dequeue SectionHeaderView")
+        }
+        headerView.titleLabel.text = cleanCategoryArr[indexPath.section]
+        return headerView
+    }
+
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return cleanCategoryArr.count
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        print(categoryArr.count, 23)
-        return categoryArr.count
+        let category = cleanCategoryArr[section]
+        print(category)
+        print(categoryArr.filter { $0.0.category == "\(section + 1). \(category)" }.count)
+        return categoryArr.filter { $0.0.category == "\(section + 1). \(category)" }.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "1", for: indexPath)
         cell.subviews.forEach { $0.removeFromSuperview() }
         
+        let category = cleanCategoryArr[indexPath.section]
+        let itemsInSection = categoryArr.filter { $0.0.category == "\(indexPath.section + 1). \(category)" }
+        let currentItem = itemsInSection[indexPath.row]
+        
         let imageView: UIImageView = {
-            let image = categoryArr[indexPath.row].1
+            let image = currentItem.1
             let imageView = UIImageView(image: image)
             imageView.clipsToBounds = true
             imageView.layer.cornerRadius = 15
@@ -226,7 +243,7 @@ extension MainView: UICollectionViewDelegate, UICollectionViewDataSource, UIColl
       
         let titleText: UILabel = {
             let label = UILabel()
-            label.text = categoryArr[indexPath.row].0.name
+            label.text = currentItem.0.name
             label.textColor = .black
             label.numberOfLines = 3
             label.font = .systemFont(ofSize: 15, weight: .semibold)
@@ -242,7 +259,7 @@ extension MainView: UICollectionViewDelegate, UICollectionViewDataSource, UIColl
         let orderButton: UIButton = {
             let button = UIButton(type: .system)
             button.backgroundColor = .backElement
-            button.setTitle("\(categoryArr[indexPath.row].0.price) ₽", for: .normal)
+            button.setTitle("\(currentItem.0.price) ₽", for: .normal)
             button.tintColor = .black
             button.layer.cornerRadius = 15
             button.tag = indexPath.row
@@ -264,16 +281,37 @@ extension MainView: UICollectionViewDelegate, UICollectionViewDataSource, UIColl
     }
     
     @objc func addToCart(button: UIButton) {
-        delegate?.addToCart(button: button)
+        guard let collectionView = collectionView,
+              let indexPath = collectionView.indexPathForItem(at: collectionView.convert(button.center, from: button.superview)) else {
+            return
+        }
+        
+        let section = indexPath.section
+        let row = indexPath.row
+        
+        let category = cleanCategoryArr[section]
+        let itemsInSection = categoryArr.filter { $0.0.category == "\(section + 1). \(category)" }
+        let currentItem = itemsInSection[row]
+        print(currentItem)
+        delegate?.addToCart(button: button, currentItem: currentItem)
     }
+
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: collectionView.frame.width, height: 150)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        delegate?.showVC(indexPatch: indexPath.row)
+        let category = cleanCategoryArr[indexPath.section]
+        let itemsInSection = categoryArr.filter { $0.0.category == "\(indexPath.section + 1). \(category)" }
+        let currentItem = itemsInSection[indexPath.row]
+        delegate?.showVC(currentItem: currentItem)
     }
     
     
 }
+
+
+
+
+
