@@ -130,8 +130,10 @@ class MainView: UIView {
             cleanCategoryArr.append(cleanCategory)
             button.tag = tag
             topCategoriesScrollView?.addSubview(button)
-            button.titleLabel?.font = .systemFont(ofSize: 18, weight: .regular)
-            button.tintColor = UIColor(red: 182/255, green: 182/255, blue: 182/255, alpha: 1)
+            button.titleLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
+            button.setTitleColor(UIColor(red: 112/255, green: 112/255, blue: 112/255, alpha: 1), for: .normal)
+            button.contentEdgeInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
+            button.layer.cornerRadius = 15
             tag += 1
             let buttonWidth = button.intrinsicContentSize.width
             totalWidth += buttonWidth + buttonSpacing
@@ -153,15 +155,24 @@ class MainView: UIView {
     
     
     @objc func changeCategory(button: UIButton) {
-        activeButton?.tintColor = UIColor(red: 182/255, green: 182/255, blue: 182/255, alpha: 1)
+        activeButton?.setTitleColor(UIColor(red: 112/255, green: 112/255, blue: 112/255, alpha: 1), for: .normal)
         activeButton?.isUserInteractionEnabled = true
-        button.tintColor = .black
+        activeButton?.backgroundColor = .white
+        
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = UIColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1)
+
+
+        
         activeButton = button
         let text: String = button.titleLabel?.text ?? ""
         delegate?.reloadTable(category: text)
     }
     
     @objc func showCart() {
+        let feedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
+        feedbackGenerator.prepare()
+        feedbackGenerator.impactOccurred()
         delegate?.showCart()
     }
     
@@ -194,6 +205,7 @@ extension MainView: UICollectionViewDelegate, UICollectionViewDataSource, UIColl
         let category = cleanCategoryArr[section]
         delegate?.updateSelectedCategoryButton(with: category)
     }
+    
     
     func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
         delegate?.endScroll()

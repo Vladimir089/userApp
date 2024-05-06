@@ -21,6 +21,8 @@ class CartView: UIView {
     var closeView: UIView?
     var errorLabel: UILabel?
     var segmentedControl: UISegmentedControl?
+    let feedbackGenerator = UINotificationFeedbackGenerator()
+    let feedbackGeneratorMedium = UIImpactFeedbackGenerator(style: .medium)
     
     
     var countOrderLabel, summCountOrderLabel, deliveryOrderLabel, summLabel: UILabel?
@@ -53,6 +55,7 @@ class CartView: UIView {
             segmented.selectedSegmentIndex = 0
             segmented.tintColor = UIColor.backElement
             segmented.selectedSegmentTintColor = .backElement
+            segmented.addTarget(self, action: #selector(changeSegmented), for: .valueChanged)
             let textAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black, NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16)]
                 segmented.setTitleTextAttributes(textAttributes, for: .normal)
             let selectedTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black, NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 16)]
@@ -326,6 +329,11 @@ class CartView: UIView {
 
     }
     
+    @objc func changeSegmented() {
+        feedbackGeneratorMedium.prepare()
+        feedbackGeneratorMedium.impactOccurred()
+    }
+    
     @objc func createOrder() {
         
         if phoneTextField?.text?.count ?? 0 < 11 {
@@ -337,7 +345,9 @@ class CartView: UIView {
                     self.errorLabel?.alpha = 0
                 }
             }
-
+            self.feedbackGenerator.prepare()
+            self.feedbackGenerator.notificationOccurred(.error)
+            
             return
         }
         
@@ -350,7 +360,8 @@ class CartView: UIView {
                     self.errorLabel?.alpha = 0
                 }
             }
-
+            self.feedbackGenerator.prepare()
+            self.feedbackGenerator.notificationOccurred(.error)
             return
         }
         
@@ -370,8 +381,13 @@ class CartView: UIView {
                     createOrderButton?.backgroundColor = .systemGreen
                     createOrderButton?.isUserInteractionEnabled = false
                     orderArr.removeAll()
+                    totalCoast = 0
                 }
+                self.feedbackGenerator.prepare()
+                self.feedbackGenerator.notificationOccurred(.success)
             }
+                self.feedbackGenerator.prepare()
+                self.feedbackGenerator.notificationOccurred(.error)
         })
     }
     
@@ -434,10 +450,14 @@ class CartView: UIView {
 
     
     @objc func stepperMinus(button: UIButton) {
+        feedbackGeneratorMedium.prepare()
+        feedbackGeneratorMedium.impactOccurred()
         delegate?.stepperPlusMinus(method: .minus, index: button.tag)
     }
     
     @objc func stepperPlus(button: UIButton) {
+        feedbackGeneratorMedium.prepare()
+        feedbackGeneratorMedium.impactOccurred()
         delegate?.stepperPlusMinus(method: .plus, index: button.tag)
     }
     

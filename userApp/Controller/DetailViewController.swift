@@ -99,6 +99,7 @@ class DetailViewController: UIViewController {
     
     @objc func add() {
         delegate?.addToCart(button: addToCartButton ?? UIButton(), currentItem: index!)
+        dismiss(animated: true)
     }
 
 }

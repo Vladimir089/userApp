@@ -22,7 +22,8 @@ class MainViewController: UIViewController {
     
     var mainView: MainView?
     var isLoad = false
-    
+    let feedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
+    var prevButton: UIButton?
     
     
     override func viewWillAppear(_ animated: Bool) {
@@ -37,7 +38,7 @@ class MainViewController: UIViewController {
         }
     }
     
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         mainView = MainView()
@@ -47,11 +48,11 @@ class MainViewController: UIViewController {
         getDishes {
             self.mainView?.collectionView?.reloadData()
             self.mainView?.settingsScrollView()
-    
+            
         }
-
+        
     }
-
+    
 }
 
 extension MainViewController: MainViewControllerDelegate {
@@ -71,26 +72,32 @@ extension MainViewController: MainViewControllerDelegate {
         if isLoad == true {
             return
         }
-        
         for subview in mainView?.topCategoriesScrollView?.subviews ?? [] {
             if let button = subview as? UIButton, let buttonText = button.titleLabel?.text {
-                button.tintColor = UIColor(red: 182/255, green: 182/255, blue: 182/255, alpha: 1)
-                
                 if buttonText == category {
-                    UIView.animate(withDuration: 0.3) {
-                        button.tintColor = .black
+                    print(category)
+                    prevButton = button
+                    if button.titleColor(for: .normal) != .white {
+                        UIView.animate(withDuration: 0.3) {
+                            button.setTitleColor(.white, for: .normal)
+                            button.backgroundColor = UIColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1)
+                        }
                     }
-                    if !mainView!.topCategoriesScrollView!.bounds.contains(button.frame) {
-                        mainView!.topCategoriesScrollView!.scrollRectToVisible(button.frame, animated: true)
+                    if let scrollView = mainView!.topCategoriesScrollView {
+                        let buttonFrameInScrollView = button.frame
+                        let contentOffsetX = buttonFrameInScrollView.midX - scrollView.bounds.width / 2.0
+                        let centeredRect = CGRect(x: contentOffsetX, y: 0, width: scrollView.bounds.width, height: scrollView.bounds.height)
+                        scrollView.scrollRectToVisible(centeredRect, animated: true)
                     }
+                } else {
+                    button.setTitleColor(UIColor(red: 112/255, green: 112/255, blue: 112/255, alpha: 1), for: .normal)
+                    button.backgroundColor = .white
                 }
             }
         }
+        
+        
     }
-
-
-    
-
     
     func showCart() {
         let vc = CartViewController()
@@ -100,6 +107,7 @@ extension MainViewController: MainViewControllerDelegate {
     }
     
     func addToCart(button: UIButton, currentItem: (Dish, UIImage)) {
+        
         let originalColor = button.backgroundColor
         let originalColorToText = button.tintColor
         if let existingIndex = orderArr.firstIndex(where: { $0.0 == currentItem.0.name }) {
@@ -107,7 +115,7 @@ extension MainViewController: MainViewControllerDelegate {
         } else {
             orderArr.append((currentItem.0.name, 1, currentItem.1, currentItem.0.price))
         }
-
+        
         UIView.animate(withDuration: 0.4) {
             button.tintColor = .white
             button.backgroundColor = .systemGreen
@@ -126,6 +134,8 @@ extension MainViewController: MainViewControllerDelegate {
             self.mainView?.showCartButton?.setTitle("Корзина \(totalCoast) ₽", for: .normal)
         }
         
+        feedbackGenerator.prepare()
+        feedbackGenerator.impactOccurred()
     }
     
     func showVC(currentItem: (Dish, UIImage)) {
@@ -142,13 +152,19 @@ extension MainViewController: MainViewControllerDelegate {
         isLoad = true
         for subview in mainView?.topCategoriesScrollView?.subviews ?? [] {
             if let button = subview as? UIButton, let buttonText = button.titleLabel?.text {
-                // Устанавливаем цвет по умолчанию для всех кнопок
-                button.tintColor = UIColor(red: 182/255, green: 182/255, blue: 182/255, alpha: 1)
-                
+                button.setTitleColor(UIColor(red: 112/255, green: 112/255, blue: 112/255, alpha: 1), for: .normal)
+                button.backgroundColor = .white
                 if buttonText == category {
-                    // Анимируем изменение цвета только для выбранной категории
                     UIView.animate(withDuration: 0.3) {
-                        button.tintColor = .black
+                        button.setTitleColor(.white, for: .normal)
+                        button.backgroundColor = UIColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1)
+                    }
+                    
+                    if let scrollView = mainView!.topCategoriesScrollView {
+                        let buttonFrameInScrollView = button.frame
+                        let contentOffsetX = buttonFrameInScrollView.midX - scrollView.bounds.width / 2.0
+                        let centeredRect = CGRect(x: contentOffsetX, y: 0, width: scrollView.bounds.width, height: scrollView.bounds.height)
+                        scrollView.scrollRectToVisible(centeredRect, animated: true)
                     }
                 }
             }
@@ -159,8 +175,5 @@ extension MainViewController: MainViewControllerDelegate {
                 mainView?.collectionView?.scrollToItem(at: indexPath, at: .top, animated: true)
             }
         }
-        
     }
-    
-
 }
