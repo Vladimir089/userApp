@@ -15,7 +15,7 @@ let token  = "73d2b9b6a303857b5854479692b05bd01defb73fb86fc5350689de1b637b764859
 var controller: MainViewController?
 
 
-func getDishes(completion: @escaping () -> Void) {
+func getDishes(completion: @escaping (Error?) -> Void) {
     let headers: HTTPHeaders = [
         HTTPHeader.authorization(bearerToken: token)]
     
@@ -34,14 +34,14 @@ func getDishes(completion: @escaping () -> Void) {
                     }
                 }
                 group.notify(queue: .main) {
-                    completion()
+                    completion(nil)
                 }
             } else {
-                completion()
+                completion(nil)
             }
-        case .failure(_):
+        case .failure(let error):
             print("error getDishes")
-            completion()
+            completion(error)
         }
     }
 }

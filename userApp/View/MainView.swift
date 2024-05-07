@@ -18,7 +18,8 @@ class MainView: UIView {
     var categoryArr: [(Dish, UIImage)] = []
     var cleanCategoryArr = [String]()
     var isScrolling: Bool = false
-
+    var errorView: UIView?
+    var standartView: UIView?
     
     //MARK: -Init
 
@@ -26,6 +27,10 @@ class MainView: UIView {
         super .init(frame: frame)
         backgroundColor = .white
         createElement()
+        createError()
+        if let adresKey = UserDefaults.standard.string(forKey: "adressKey")  {
+            adress = adresKey
+        }
     }
     
     required init?(coder: NSCoder) {
@@ -33,11 +38,142 @@ class MainView: UIView {
     }
     
     //MARK: -Set elements
+    func createError() {
+        
+        standartView = {
+            let view = UIView()
+            view.backgroundColor = .white
+            return view
+        }()
+        addSubview(standartView ?? UIView())
+        standartView?.snp.makeConstraints({ make in
+            make.left.right.top.bottom.equalToSuperview()
+        })
+        
+        let modulationScrollView = generateView(colorView: .backElement, cornerRadius: 20)
+        standartView?.addSubview(modulationScrollView)
+        modulationScrollView.snp.makeConstraints { make in
+            make.left.right.equalToSuperview().inset(15)
+            make.top.equalTo(safeAreaLayoutGuide.snp.top)
+            make.height.equalTo(42)
+        }
+        
+        let stackView: UIStackView = {
+            let stack = UIStackView()
+            stack.spacing = 20
+            stack.axis = .vertical
+            stack.distribution = .fillEqually
+            return stack
+        }()
+        standartView?.addSubview(stackView)
+        stackView.snp.makeConstraints { make in
+            make.left.right.bottom.equalToSuperview().inset(15)
+            make.top.equalTo(modulationScrollView.snp.bottom).inset(-20)
+        }
+        
+        let oneView = generateView(colorView: .backElement, cornerRadius: 20)
+        stackView.addArrangedSubview(oneView)
+        let twoView = generateView(colorView: .backElement, cornerRadius: 20)
+        stackView.addArrangedSubview(twoView)
+        let threeView = generateView(colorView: .backElement, cornerRadius: 20)
+        stackView.addArrangedSubview(threeView)
+        let fourView = generateView(colorView: .backElement, cornerRadius: 20)
+        stackView.addArrangedSubview(fourView)
+        
+        errorView = {
+            let view = UIView()
+            view.backgroundColor = .white
+            view.alpha = 0
+            return view
+        }()
+        addSubview(errorView ?? UIView())
+        errorView?.snp.makeConstraints({ make in
+            make.left.right.top.bottom.equalToSuperview()
+        })
+        let imageView = UIImageView()
+        let image: UIImage = .error
+        imageView.image = image
+        errorView?.addSubview(imageView)
+        imageView.snp.makeConstraints { make in
+            make.height.width.equalTo(160)
+            make.centerY.equalToSuperview().offset(-100)
+            make.centerX.equalToSuperview()
+        }
+        
+        let labelMain: UILabel = {
+            let label = UILabel()
+            label.text = "Нет интернет соединения"
+            label.font = .systemFont(ofSize: 25, weight: .semibold)
+            label.textColor = .black
+            label.textAlignment = .center
+            return label
+        }()
+        errorView?.addSubview(labelMain)
+        labelMain.snp.makeConstraints { make in
+            make.left.right.equalToSuperview().inset(15)
+            make.top.equalTo(imageView.snp.bottom).inset(-10)
+        }
+        
+        let secondLabel: UILabel = {
+            let label = UILabel()
+            label.font = .systemFont(ofSize: 17, weight: .regular)
+            label.textColor = UIColor(red: 137/255, green: 137/255, blue: 137/255, alpha: 1)
+            label.numberOfLines = 3
+            label.textAlignment = .center
+            label.text = "В настоящее время подключение к интернету недоступно, повторите попытку."
+            return label
+        }()
+        errorView?.addSubview(secondLabel)
+        secondLabel.snp.makeConstraints { make in
+            make.left.right.equalToSuperview().inset(15)
+            make.top.equalTo(labelMain.snp.bottom).inset(-10)
+        }
+        
+        let refreshButton: UIButton = {
+            let button = UIButton(type: .system)
+            button.setTitle("Попробовать снова", for: .normal)
+            button.backgroundColor = UIColor(red: 248/255, green: 102/255, blue: 6/255, alpha: 1)
+            button.tintColor = .white
+            button.layer.cornerRadius = 30
+            button.titleLabel?.font = .systemFont(ofSize: 17, weight: .semibold)
+            button.addTarget(self, action: #selector(refresh), for: .touchUpInside)
+            return button
+        }()
+        errorView?.addSubview(refreshButton)
+        refreshButton.snp.makeConstraints { make in
+            make.height.equalTo(60)
+            make.left.right.equalToSuperview().inset(15)
+            make.top.equalTo(secondLabel.snp.bottom).inset(-30)
+        }
+    }
+    
+    func generateView(colorView: UIColor, cornerRadius: Int) -> UIView {
+        let view = UIView()
+        view.backgroundColor = colorView
+        view.layer.cornerRadius = CGFloat(cornerRadius)
+        return view
+    }
+    
+    func error(isError: Bool) {
+        switch isError {
+        case true:
+            errorView?.alpha = 100
+            standartView?.alpha = 0
+        case false:
+            errorView?.alpha = 0
+            standartView?.alpha = 0
+            collectionView?.reloadData()
+            settingsScrollView()
+        }
+    }
+    
+    @objc func refresh() {
+        delegate?.refreshView()
+    }
+    
+    
     
     func createElement() {
-       
-        
-        
         topCategoriesScrollView = {
             let scroll = UIScrollView()
             scroll.showsVerticalScrollIndicator = false

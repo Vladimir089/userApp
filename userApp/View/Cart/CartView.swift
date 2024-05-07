@@ -32,6 +32,12 @@ class CartView: UIView {
     override init(frame: CGRect) {
         super .init(frame: frame)
         createInterface()
+        if let phoneKey = UserDefaults.standard.string(forKey: "phoneKey")  {
+            phone = phoneKey
+            phoneTextField?.text = phone
+        }
+        print(adress, phone)
+        
     }
     
     required init?(coder: NSCoder) {
@@ -79,16 +85,19 @@ class CartView: UIView {
         phoneTextField = {
             let textField = UITextField()
             textField.backgroundColor = .clear
-            textField.textAlignment = .right
+            textField.textAlignment = .left
             textField.keyboardType = .phonePad
-            let leftLabel = UILabel()
-            leftLabel.text = "Номер телефона "
-            leftLabel.textColor = UIColor(red: 182/255, green: 182/255, blue: 182/255, alpha: 1)
+            
+        
+            textField.delegate = self
+            let placeholderAttributes: [NSAttributedString.Key: Any] = [
+                .foregroundColor: UIColor(red: 182/255, green: 182/255, blue: 182/255, alpha: 1)
+            ]
+            textField.attributedPlaceholder = NSAttributedString(string: "Номер телефона", attributes: placeholderAttributes)
+            
+            
             textField.layer.cornerRadius = 5
-            leftLabel.font = .systemFont(ofSize: 18, weight: .regular)
-            textField.leftView = leftLabel
             textField.textColor = .black
-            textField.leftViewMode = .always
             textField.delegate = self
             textField.text = phone
             return textField
@@ -105,19 +114,21 @@ class CartView: UIView {
         adresTextField = {
             let textField = UITextField()
             textField.backgroundColor = .clear
-            textField.textAlignment = .right
+            textField.textAlignment = .left
             textField.layer.cornerRadius = 5
-            let leftLabel = UILabel()
-            leftLabel.text = "Адрес "
-            leftLabel.textColor = UIColor(red: 182/255, green: 182/255, blue: 182/255, alpha: 1)
+            textField.placeholder = "Адрес"
             textField.delegate = self
-            leftLabel.font = .systemFont(ofSize: 18, weight: .regular)
-            textField.leftView = leftLabel
+            let placeholderAttributes: [NSAttributedString.Key: Any] = [
+                .foregroundColor: UIColor(red: 182/255, green: 182/255, blue: 182/255, alpha: 1)
+            ]
+            textField.attributedPlaceholder = NSAttributedString(string: "Адрес", attributes: placeholderAttributes)
+            
             textField.textColor = .black
             textField.leftViewMode = .always
             textField.text = adress
             return textField
         }()
+
         topView?.addSubview(adresTextField ?? UITextField())
         
         addSubview(scrollView )
@@ -336,15 +347,28 @@ class CartView: UIView {
     
     @objc func createOrder() {
         
-        if phoneTextField?.text?.count ?? 0 < 11 {
-            self.errorLabel?.text = "Неверный номер телефона 😢"
-            UIView.animate(withDuration: 0.1) {
-                self.errorLabel?.alpha = 100
-            } completion: { _ in
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    self.errorLabel?.alpha = 0
+        if phoneTextField?.text?.count ?? 0 < 10 {
+            createOrderButton?.isUserInteractionEnabled = false
+            UIView.animate(withDuration: 0.1,
+                           delay: 0,
+                           usingSpringWithDamping: 0.2,
+                           initialSpringVelocity: 6.0,
+                           options: .allowUserInteraction,
+                           animations: { [self] in
+                createOrderButton?.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+                createOrderButton?.setTitle("Неверный номер телефона 😢", for: .normal)
+                self.createOrderButton?.backgroundColor = .systemRed
+            },
+                           completion: { _ in
+                UIView.animate(withDuration: 0.1) {
+                    self.createOrderButton?.transform = CGAffineTransform.identity
                 }
-            }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    self.createOrderButton?.backgroundColor = UIColor(red: 248/255, green: 102/255, blue: 6/255, alpha: 1)
+                    self.createOrderButton?.setTitle("Оформить заказ за \(totalCoast) ₽", for: .normal)
+                    self.createOrderButton?.isUserInteractionEnabled = true
+                }
+            })
             self.feedbackGenerator.prepare()
             self.feedbackGenerator.notificationOccurred(.error)
             
@@ -352,14 +376,27 @@ class CartView: UIView {
         }
         
         if adresTextField?.text == "" || adresTextField?.text == " " || adresTextField?.text == nil {
-            errorLabel?.text = "Неверный адрес 😢"
-            UIView.animate(withDuration: 0.1) {
-                self.errorLabel?.alpha = 100
-            } completion: { _ in
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    self.errorLabel?.alpha = 0
+            createOrderButton?.isUserInteractionEnabled = false
+            UIView.animate(withDuration: 0.1,
+                           delay: 0,
+                           usingSpringWithDamping: 0.2,
+                           initialSpringVelocity: 6.0,
+                           options: .allowUserInteraction,
+                           animations: { [self] in
+                createOrderButton?.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+                createOrderButton?.setTitle("Неверный адрес 😢", for: .normal)
+                self.createOrderButton?.backgroundColor = .systemRed
+            },
+                           completion: { _ in
+                UIView.animate(withDuration: 0.1) {
+                    self.createOrderButton?.transform = CGAffineTransform.identity
                 }
-            }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    self.createOrderButton?.backgroundColor = UIColor(red: 248/255, green: 102/255, blue: 6/255, alpha: 1)
+                    self.createOrderButton?.setTitle("Оформить заказ за \(totalCoast) ₽", for: .normal)
+                    self.createOrderButton?.isUserInteractionEnabled = true
+                }
+            })
             self.feedbackGenerator.prepare()
             self.feedbackGenerator.notificationOccurred(.error)
             return
@@ -376,6 +413,8 @@ class CartView: UIView {
         }
         delegate?.createNewOrder(phonee: phone, menuItems: menu, clientsNumber: 1, adress: adress, totalCost: totalCoast, paymentMethod: "Наличка", timeOrder: "1", cafeID: 2, completion: { success in
             if success {
+                UserDefaults.standard.setValue(phone, forKey: "phoneKey")
+                UserDefaults.standard.setValue(adress, forKey: "adressKey")
                 UIView.animate(withDuration: 0.5) { [self] in
                     createOrderButton?.setTitle("Заказ успешно создан!", for: .normal)
                     createOrderButton?.backgroundColor = .systemGreen
@@ -385,9 +424,31 @@ class CartView: UIView {
                 }
                 self.feedbackGenerator.prepare()
                 self.feedbackGenerator.notificationOccurred(.success)
-            }
+            } else {
+                self.createOrderButton?.isUserInteractionEnabled = false
                 self.feedbackGenerator.prepare()
                 self.feedbackGenerator.notificationOccurred(.error)
+                UIView.animate(withDuration: 0.1,
+                               delay: 0,
+                               usingSpringWithDamping: 0.2,
+                               initialSpringVelocity: 6.0,
+                               options: .allowUserInteraction,
+                               animations: { [self] in
+                    createOrderButton?.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+                    createOrderButton?.setTitle("Нет интернет соединения", for: .normal)
+                    self.createOrderButton?.backgroundColor = .systemRed
+                },
+                               completion: { _ in
+                    UIView.animate(withDuration: 0.1) {
+                        self.createOrderButton?.transform = CGAffineTransform.identity
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        self.createOrderButton?.backgroundColor = UIColor(red: 248/255, green: 102/255, blue: 6/255, alpha: 1)
+                        self.createOrderButton?.setTitle("Оформить заказ за \(totalCoast) ₽", for: .normal)
+                        self.createOrderButton?.isUserInteractionEnabled = true
+                    }
+                })
+            }
         })
     }
     
@@ -483,11 +544,17 @@ extension CartView: UITextFieldDelegate {
             phone = phoneTextField?.text ?? ""
         }
     }
+    
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         if textField == adresTextField {
             hideKeyboard()
             delegate?.showAdresVC()
             return false
+        }
+        if textField == phoneTextField {
+            if phoneTextField?.text?.isEmpty ?? true {
+                phoneTextField?.text = "+7"
+            }
         }
         return true
     }

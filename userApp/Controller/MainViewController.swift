@@ -16,6 +16,7 @@ protocol MainViewControllerDelegate: AnyObject {
     func closeVC()
     func updateSelectedCategoryButton(with category: String)
     func endScroll()
+    func refreshView()
 }
 
 class MainViewController: UIViewController {
@@ -24,6 +25,7 @@ class MainViewController: UIViewController {
     var isLoad = false
     let feedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
     var prevButton: UIButton?
+    
     
     
     override func viewWillAppear(_ animated: Bool) {
@@ -38,24 +40,26 @@ class MainViewController: UIViewController {
         }
     }
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         mainView = MainView()
         mainView?.delegate = self
         self.view = mainView
-        
-        getDishes {
-            self.mainView?.collectionView?.reloadData()
-            self.mainView?.settingsScrollView()
-            
-        }
-        
+        refreshView()
     }
-    
 }
 
 extension MainViewController: MainViewControllerDelegate {
+    func refreshView() {
+        getDishes { error in
+            if error == nil {
+                self.mainView?.error(isError: false)
+            } else {
+                self.mainView?.error(isError: true)
+            }
+        }
+    }
+    
     func endScroll() {
         isLoad = false
     }
@@ -99,6 +103,7 @@ extension MainViewController: MainViewControllerDelegate {
         
     }
     
+
     func showCart() {
         let vc = CartViewController()
         vc.delegate = self

@@ -22,10 +22,11 @@ class AdresViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         createInterface()
+        
     }
     
     func createInterface() {
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(red: 242/255, green: 242/255, blue: 242/255, alpha: 1)
         
         closeView = {
             let view = UIView()
@@ -44,7 +45,10 @@ class AdresViewController: UIViewController {
             textField.text = adress
             textField.backgroundColor = .white
             textField.layer.cornerRadius = 10
-            textField.placeholder = "Поиск"
+            let placeholderAttributes: [NSAttributedString.Key: Any] = [
+                .foregroundColor: UIColor(red: 182/255, green: 182/255, blue: 182/255, alpha: 1)
+            ]
+            textField.attributedPlaceholder = NSAttributedString(string: "Улица, № дома, село", attributes: placeholderAttributes)
             textField.delegate = self
             return textField
         }()
@@ -64,6 +68,7 @@ class AdresViewController: UIViewController {
             let table = UITableView()
             table.backgroundColor = .white
             table.dataSource = self
+            table.layer.cornerRadius = 10
             table.isUserInteractionEnabled = true
             table.delegate = self
             table.register(UITableViewCell.self, forCellReuseIdentifier: "1")
@@ -99,8 +104,9 @@ class AdresViewController: UIViewController {
         }
         
         tableView?.snp.makeConstraints({ make in
-            make.bottom.left.right.equalToSuperview()
-            make.top.equalTo((adressTextField ?? UITextField()).snp.bottom).inset(-5)
+            make.bottom.equalToSuperview()
+            make.left.right.equalToSuperview().inset(15)
+            make.top.equalTo((adressTextField ?? UITextField()).snp.bottom).inset(-10)
         })
     }
     
@@ -137,6 +143,11 @@ extension AdresViewController: UITextFieldDelegate {
         print(text)
         delegate?.closeVC(text: text)
         return true
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        let text = textField.text ?? " "
+        reload(address: text, controller: self)
     }
     
     func textFieldDidChangeSelection(_ textField: UITextField) {

@@ -51,8 +51,14 @@ extension CartViewController: CartViewControllerDelegate {
             HTTPHeader.contentType("application/json"),
             HTTPHeader.authorization(bearerToken: token)
         ]
-
         
+        var phone = phonee
+        if phone.hasPrefix("+7") {
+            phone.removeFirst(2)
+        } else if phone.hasPrefix("8") {
+            phone.removeFirst()
+        }
+
         let parameters: [String : Any] = [
             "phone": phone,
             "menu_items": menuItems,
@@ -65,7 +71,7 @@ extension CartViewController: CartViewControllerDelegate {
         ]
         
         AF.request("http://arbamarket.ru/api/v1/main/create_order/", method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: headers).response { response in
-            debugPrint(response)
+
             print(response)
             switch response.result {
             case .success(_):
