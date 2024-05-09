@@ -64,12 +64,20 @@ extension MainViewController: MainViewControllerDelegate {
         isLoad = false
     }
     
+    func updateButton() {
+        var summ = 0
+        for i in orderArr {
+            summ += (i.1 * i.3)
+        }
+        self.mainView?.showCartButton?.setTitle("Корзина \(summ) ₽", for: .normal)
+    }
+    
     func closeVC() {
         if orderArr.count == 0 {
             mainView?.showCartButton?.alpha = 0
             mainView?.showCartButton?.isUserInteractionEnabled = false
         }
-        self.mainView?.showCartButton?.setTitle("Корзина \(totalCoast) ₽", for: .normal)
+        updateButton()
     }
     
     func updateSelectedCategoryButton(with category: String) {
@@ -135,12 +143,14 @@ extension MainViewController: MainViewControllerDelegate {
             self.mainView?.showCartButton?.alpha = 100
             self.mainView?.showCartButton?.isUserInteractionEnabled = true
         }
-        getTotalCoast(adress: adress) {
-            self.mainView?.showCartButton?.setTitle("Корзина \(totalCoast) ₽", for: .normal)
-        }
         
+        updateButton()
+
         feedbackGenerator.prepare()
         feedbackGenerator.impactOccurred()
+        getTotalCoast(adress: adress) {
+            return
+        }
     }
     
     func showVC(currentItem: (Dish, UIImage)) {

@@ -16,6 +16,7 @@ protocol CartViewControllerDelegate: AnyObject {
     func stepperPlusMinus(method: methodButton, index: Int)
     func reloadLabels(adress: String)
     func createNewOrder(phonee: String, menuItems: String, clientsNumber: Int, adress: String, totalCost: Int, paymentMethod: String, timeOrder: String, cafeID: Int, completion: @escaping (Bool) -> Void)
+    func clearAdressText()
 }
 
 class CartViewController: UIViewController {
@@ -45,6 +46,10 @@ class CartViewController: UIViewController {
 }
 
 extension CartViewController: CartViewControllerDelegate {
+    func clearAdressText() {
+        mainView?.adresTextField?.text = nil
+    }
+    
     func createNewOrder(phonee: String, menuItems: String, clientsNumber: Int, adress: String, totalCost: Int, paymentMethod: String, timeOrder: String, cafeID: Int, completion: @escaping (Bool) -> Void) {
         let headers: HTTPHeaders = [
             HTTPHeader.accept("application/json"),

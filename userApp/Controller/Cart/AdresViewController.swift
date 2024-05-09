@@ -50,6 +50,15 @@ class AdresViewController: UIViewController {
             ]
             textField.attributedPlaceholder = NSAttributedString(string: "Улица, № дома, село", attributes: placeholderAttributes)
             textField.delegate = self
+            
+            let buttonClear = UIButton(type: .system)
+            buttonClear.backgroundColor = .white
+            buttonClear.setImage(UIImage(systemName: "xmark"), for: .normal)
+            buttonClear.clipsToBounds = true
+            buttonClear.contentEdgeInsets = UIEdgeInsets(top: -5, left: -5, bottom: -5, right: 5)
+            buttonClear.addTarget(self, action: #selector(clearText), for: .touchUpInside)
+            textField.rightView = buttonClear
+            textField.rightViewMode = .whileEditing
             return textField
         }()
         view.addSubview(adressTextField ?? UITextField())
@@ -108,6 +117,12 @@ class AdresViewController: UIViewController {
             make.left.right.equalToSuperview().inset(15)
             make.top.equalTo((adressTextField ?? UITextField()).snp.bottom).inset(-10)
         })
+    }
+    
+    @objc func clearText() {
+        adressTextField?.text = ""
+        adress = ""
+        delegate?.clearAdressText()
     }
     
     @objc func closeBut() {

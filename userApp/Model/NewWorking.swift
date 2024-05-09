@@ -105,7 +105,6 @@ func getTotalCoast(adress: String?, completion: @escaping () -> Void) {
     let lastIndex = orderArr.last?.0
 
     for (index, key, _, _) in orderArr {
-        let count = key
         menu.append("\(index) - \(key)")
         if index != lastIndex {
             menu.append(", ")
