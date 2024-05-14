@@ -34,6 +34,8 @@ class CartViewController: UIViewController {
         mainView?.delegate = self
         self.view = mainView
         settingsNavBar()
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     func settingsNavBar() {
@@ -41,7 +43,25 @@ class CartViewController: UIViewController {
         title = "Корзина"
         navigationController?.navigationBar.backItem?.title = ""
     }
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+            let keyboardRectangle = keyboardFrame.cgRectValue
+            let keyboardHeight = keyboardRectangle.height
+            UIView.animate(withDuration: 0.2) {
+                self.mainView?.transform = CGAffineTransform(translationX: 0, y: -keyboardHeight)
+            }
+        }
+    }
+
+    @objc func keyboardWillHide(notification: NSNotification) {
+        UIView.animate(withDuration: 0.2) {
+            self.mainView?.transform = CGAffineTransform(translationX: 0, y: 0)
+        }
+    }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
     
 }
 
@@ -67,7 +87,7 @@ extension CartViewController: CartViewControllerDelegate {
         let parameters: [String : Any] = [
             "phone": phone,
             "menu_items": menuItems,
-            "clients_number": 1,
+            "clients_number": clientsNumber,
             "address": adress,
             "total_cost": totalCoast,
             "payment_method": "Наличка",

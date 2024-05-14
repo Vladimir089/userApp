@@ -34,9 +34,11 @@ class MainViewController: UIViewController {
         if orderArr.count != 0 {
             UIView.animate(withDuration: 0.2) {
                 self.mainView?.showCartButton?.alpha = 100
+                self.mainView?.blurView?.alpha = 100
             }
         } else {
             mainView?.showCartButton?.alpha = 0
+            self.mainView?.blurView?.alpha = 0
         }
     }
     
@@ -69,14 +71,96 @@ extension MainViewController: MainViewControllerDelegate {
         for i in orderArr {
             summ += (i.1 * i.3)
         }
-        self.mainView?.showCartButton?.setTitle("Корзина \(summ) ₽", for: .normal)
+        if orderArr.count == 1 {
+            self.mainView?.twoViewForBot?.alpha = 0
+            self.mainView?.threeViewForBot?.alpha = 0
+            self.mainView?.blurView?.snp.updateConstraints({ make in
+                make.width.equalTo(180)
+            })
+            UIView.animate(withDuration: 0.5) {
+                self.mainView?.layoutIfNeeded()
+                self.mainView?.oneViewForBot?.alpha = 100
+            }
+        }
+       
+        
+        if orderArr.count == 2 {
+            self.mainView?.threeViewForBot?.alpha = 0
+            self.mainView?.blurView?.snp.updateConstraints({ make in
+                make.width.equalTo(215)
+            })
+            
+            UIView.animate(withDuration: 0.5) {
+                self.mainView?.layoutIfNeeded()
+                self.mainView?.twoViewForBot?.alpha = 100
+            }
+        }
+        
+        if orderArr.count == 3 {
+            self.mainView?.blurView?.snp.updateConstraints({ make in
+                make.width.equalTo(250)
+            })
+
+            UIView.animate(withDuration: 0.5) {
+                self.mainView?.layoutIfNeeded()
+                self.mainView?.threeViewForBot?.alpha = 100
+            }
+        }
+        self.mainView?.showCartButton?.setTitle("\(summ) ₽", for: .normal)
+        settingsView()
+    }
+    
+    func settingsView() {
+
+        if !orderArr.isEmpty {
+            let index = orderArr.count
+            
+            for i in 0..<orderArr.count {
+                UIView.animate(withDuration: 0.5) { [self] in
+                    
+                    if orderArr.count == 3  {
+                        self.mainView?.oneViewForBot?.image = orderArr[index - 3].2
+                        self.mainView?.twoViewForBot?.image = orderArr[index - 2].2
+                        self.mainView?.threeViewForBot?.image = orderArr[index - 1].2
+                        return
+                    }
+                    
+                    if orderArr.count == 2  {
+                        self.mainView?.oneViewForBot?.image = orderArr[index - 2].2
+                        self.mainView?.twoViewForBot?.image = orderArr[index - 1].2
+                        return
+                    }
+                    
+                    if orderArr.count == 1  {
+                        self.mainView?.oneViewForBot?.image = orderArr[index - 1].2
+                        return
+                    }
+                    
+                    if orderArr.count > 3 {
+                        UIView.transition(with: (self.mainView?.oneViewForBot)!, duration: 0.2, options: .transitionCrossDissolve, animations: {
+                                self.mainView?.oneViewForBot?.image = orderArr[index - 3].2
+                            }, completion: nil)
+                        UIView.transition(with: (self.mainView?.twoViewForBot)!, duration: 0.2, options: .transitionCrossDissolve, animations: {
+                            self.mainView?.twoViewForBot?.image = orderArr[index - 2].2
+                        }, completion: nil)
+                        UIView.transition(with: (self.mainView?.threeViewForBot)!, duration: 0.2, options: .transitionCrossDissolve, animations: {
+                            self.mainView?.threeViewForBot?.image = orderArr[index - 1].2
+                        }, completion: nil)
+                        
+                    }
+                }
+               
+            }
+        }
     }
     
     func closeVC() {
         if orderArr.count == 0 {
             mainView?.showCartButton?.alpha = 0
+            self.mainView?.blurView?.alpha = 0
             mainView?.showCartButton?.isUserInteractionEnabled = false
         }
+        print(orderArr)
         updateButton()
     }
     
@@ -141,6 +225,7 @@ extension MainViewController: MainViewControllerDelegate {
         }
         UIView.animate(withDuration: 0.5) {
             self.mainView?.showCartButton?.alpha = 100
+            self.mainView?.blurView?.alpha = 100
             self.mainView?.showCartButton?.isUserInteractionEnabled = true
         }
         

@@ -22,6 +22,15 @@ func getDishes(completion: @escaping (Error?) -> Void) {
     AF.request("http://arbamarket.ru/api/v1/main/get_dishes/?cafe_id=\(cafeID)", method: .get, headers: headers).response { response in
         switch response.result {
         case .success(_):
+            
+            if let status = response.response?.statusCode {
+                if status == 502 || status == 400 {
+                    let error = NSError(domain: "", code: 502, userInfo: [NSLocalizedDescriptionKey : "Bad Gateway"])
+                    completion(error)
+                    return
+                }
+            }
+            
             if let data = response.data, let dishResponse = try? JSONDecoder().decode(DishesResponse.self, from: data) {
                 let dishes = dishResponse.dishes
                 

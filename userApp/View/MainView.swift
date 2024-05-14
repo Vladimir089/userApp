@@ -20,6 +20,9 @@ class MainView: UIView {
     var isScrolling: Bool = false
     var errorView: UIView?
     var standartView: UIView?
+    var blurView: UIView?
+    var oneViewForBot, twoViewForBot, threeViewForBot: UIImageView?
+
     
     //MARK: -Init
 
@@ -102,7 +105,7 @@ class MainView: UIView {
         
         let labelMain: UILabel = {
             let label = UILabel()
-            label.text = "Нет интернет соединения"
+            label.text = "Нет соединения с сервером"
             label.font = .systemFont(ofSize: 25, weight: .semibold)
             label.textColor = .black
             label.textAlignment = .center
@@ -120,7 +123,7 @@ class MainView: UIView {
             label.textColor = UIColor(red: 137/255, green: 137/255, blue: 137/255, alpha: 1)
             label.numberOfLines = 3
             label.textAlignment = .center
-            label.text = "В настоящее время подключение к интернету недоступно, повторите попытку."
+            label.text = "В настоящее время подключение к серверу недоступно, повторите попытку."
             return label
         }()
         errorView?.addSubview(secondLabel)
@@ -199,18 +202,46 @@ class MainView: UIView {
         }()
         addSubview(collectionView ?? UICollectionView())
         
+        blurView = {
+            let gesture = UITapGestureRecognizer(target: self, action: #selector(showCart))
+            let blurEffect = UIBlurEffect(style: .light)
+            let blurView = UIVisualEffectView(effect: blurEffect)
+            blurView.layer.cornerRadius = 30
+            blurView.backgroundColor = UIColor(red: 248/255, green: 102/255, blue: 6/255, alpha: 0.6)
+            blurView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            blurView.clipsToBounds = true
+            blurView.addGestureRecognizer(gesture)
+            return blurView
+        }()
+        addSubview(blurView ?? UIView())
+        
         showCartButton = {
             let button = UIButton(type: .system)
-            button.setTitle("Корзина \(totalCoast) ₽", for: .normal)
+            button.setTitle("\(totalCoast) ₽", for: .normal)
             button.tintColor = .white
-            button.alpha = 0
             button.addTarget(self, action: #selector(showCart), for: .touchUpInside)
-            button.backgroundColor = UIColor(red: 248/255, green: 102/255, blue: 6/255, alpha: 1)
             button.titleLabel?.font = .systemFont(ofSize: 20, weight: .semibold)
             button.layer.cornerRadius = 30
+            button.clipsToBounds = true // Add this
             return button
         }()
         addSubview(showCartButton ?? UIButton())
+        
+        
+        if let blurEffectView = blurView as? UIVisualEffectView {
+            
+            oneViewForBot = generateImageView()
+            blurEffectView.contentView.addSubview(oneViewForBot ?? UIView())
+            
+            twoViewForBot = generateImageView()
+            twoViewForBot?.alpha = 0
+            blurEffectView.contentView.addSubview(twoViewForBot ?? UIView())
+            
+            threeViewForBot = generateImageView()
+            threeViewForBot?.alpha = 0
+            blurEffectView.contentView.addSubview(threeViewForBot ?? UIView())
+        }
+    
         
         createConstraints()
     }
@@ -221,24 +252,56 @@ class MainView: UIView {
         
         topCategoriesScrollView?.snp.makeConstraints({ make in
             make.height.equalTo(42)
-            make.left.right.equalToSuperview().inset(15)
+            make.left.right.equalToSuperview().inset(5)
             make.top.equalTo(safeAreaLayoutGuide.snp.top)
         })
         
         collectionView?.snp.makeConstraints({ make in
             make.left.right.equalToSuperview().inset(15)
             make.bottom.equalToSuperview()
-            make.top.equalTo((topCategoriesScrollView ?? UIScrollView()).snp.bottom)
+            make.top.equalTo((topCategoriesScrollView ?? UIScrollView()).snp.bottom).inset(-5)
+        })
+        
+        blurView?.snp.makeConstraints({ make in
+            make.width.equalTo(180)
+            make.height.equalTo(60)
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).inset(25)
         })
         
         showCartButton?.snp.makeConstraints({ make in
-            make.left.right.equalToSuperview().inset(15)
-            make.height.equalTo(60)
-            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom)
+            make.top.bottom.equalTo((blurView ?? UIView()))
+            make.left.equalTo((blurView ?? UIView())).inset(35)
         })
+        
+        oneViewForBot?.snp.makeConstraints({ make in
+            make.height.width.equalTo(58)
+            make.right.equalToSuperview().inset(2.5)
+            make.centerY.equalToSuperview()
+        })
+        
+        twoViewForBot?.snp.makeConstraints({ make in
+            make.height.width.equalTo(58)
+            make.right.equalTo((oneViewForBot?.snp.left)!).inset(25)
+            make.centerY.equalToSuperview()
+        })
+        
+        threeViewForBot?.snp.makeConstraints({ make in
+            make.height.width.equalTo(58)
+            make.right.equalTo((twoViewForBot?.snp.left)!).inset(25)
+            make.centerY.equalToSuperview()
+        })
+        
         
     }
     
+    func generateImageView() -> UIImageView {
+        let imageView = UIImageView()
+        imageView.backgroundColor = UIColor(red: 248/255, green: 102/255, blue: 6/255, alpha: 1)
+        imageView.layer.cornerRadius = 29
+        imageView.clipsToBounds = true
+        return imageView
+    }
     //MARK: -Settings ScrollView
     
     func settingsScrollView() {

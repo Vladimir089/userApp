@@ -14,10 +14,121 @@
             filePath = "userApp/View/MainView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "76"
-            endingLineNumber = "76"
+            startingLineNumber = "79"
+            endingLineNumber = "79"
             landmarkName = "createError()"
             landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "168A5B17-21F3-436F-9525-558BFCACD316"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "userApp/View/Cart/CartView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "193"
+            endingLineNumber = "193"
+            landmarkName = "createInterface()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "168A5B17-21F3-436F-9525-558BFCACD316 - 4458e09f7ec3bab8"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "userApp.CartView.createInterface() -&gt; ()"
+                  moduleName = "userApp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/vladimirkacap/Desktop/Swift/userApp/userApp/View/Cart/CartView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "189"
+                  endingLineNumber = "189"
+                  offsetFromSymbolStart = "2944">
+               </Location>
+               <Location
+                  uuid = "168A5B17-21F3-436F-9525-558BFCACD316 - 5ed75847fccca97a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #11 () -&gt; __C.UIView in userApp.CartView.createInterface() -&gt; ()"
+                  moduleName = "userApp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/vladimirkacap/Desktop/Swift/userApp/userApp/View/Cart/CartView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "190"
+                  endingLineNumber = "190"
+                  offsetFromSymbolStart = "28">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "508E67E8-EF8C-4AC5-8A42-3BC924AE2FC9"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "userApp/View/Cart/CartView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "385"
+            endingLineNumber = "385"
+            landmarkName = "createContraints()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "508E67E8-EF8C-4AC5-8A42-3BC924AE2FC9 - 92cd17ed496a5ad3"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "userApp.CartView.createContraints() -&gt; ()"
+                  moduleName = "userApp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/vladimirkacap/Desktop/Swift/userApp/userApp/View/Cart/CartView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "381"
+                  endingLineNumber = "381"
+                  offsetFromSymbolStart = "4296">
+               </Location>
+               <Location
+                  uuid = "508E67E8-EF8C-4AC5-8A42-3BC924AE2FC9 - d5fa899f0e2fd40"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #20 (SnapKit.ConstraintMaker) -&gt; () in userApp.CartView.createContraints() -&gt; ()"
+                  moduleName = "userApp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/vladimirkacap/Desktop/Swift/userApp/userApp/View/Cart/CartView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "382"
+                  endingLineNumber = "382"
+                  offsetFromSymbolStart = "36">
+               </Location>
+               <Location
+                  uuid = "508E67E8-EF8C-4AC5-8A42-3BC924AE2FC9 - 92cd17ed496a5ad3"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "userApp.CartView.createContraints() -&gt; ()"
+                  moduleName = "userApp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/vladimirkacap/Desktop/Swift/userApp/userApp/View/Cart/CartView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "381"
+                  endingLineNumber = "381"
+                  offsetFromSymbolStart = "2040">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

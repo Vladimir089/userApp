@@ -8,7 +8,8 @@
 import UIKit
 
 class CartView: UIView {
-    
+    var pribori = 1
+    var commentInOrder = ""   //КОММЕНТАРИЙК ЗАКАЗУ
     var topView, separatorView: UIView?
     var phoneTextField, adresTextField: UITextField?
     var collectionView: UICollectionView?
@@ -23,6 +24,13 @@ class CartView: UIView {
     var segmentedControl: UISegmentedControl?
     let feedbackGenerator = UINotificationFeedbackGenerator()
     let feedbackGeneratorMedium = UIImpactFeedbackGenerator(style: .medium)
+    var botView: UIView?
+    var secondSeparatorView, threeSeparatorView: UIView?
+    var priboriLabel: UILabel?
+    var priboriCountLabel: UILabel?
+    var customStepper: UIView?
+    var commentInOrderTextField: UITextField?
+
     
     
     var countOrderLabel, summCountOrderLabel, deliveryOrderLabel, summLabel: UILabel?
@@ -51,7 +59,7 @@ class CartView: UIView {
     }
     
     func createInterface() {
-        backgroundColor = .white
+        backgroundColor = UIColor(red: 242/255, green: 243/255, blue: 248/255, alpha: 1)
         let gesture = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
         addGestureRecognizer(gesture)
         
@@ -76,7 +84,7 @@ class CartView: UIView {
         
         topView = {
             let view = UIView()
-            view.backgroundColor = .backElement
+            view.backgroundColor = .white
             view.layer.cornerRadius = 10
             return view
         }()
@@ -106,7 +114,7 @@ class CartView: UIView {
         
         separatorView = {
             let view = UIView()
-            view.backgroundColor = .separator
+            view.backgroundColor = UIColor(red: 229/255, green: 229/255, blue: 229/255, alpha: 1)
             return view
         }()
         topView?.addSubview(separatorView ?? UIView())
@@ -122,8 +130,11 @@ class CartView: UIView {
                 .foregroundColor: UIColor(red: 182/255, green: 182/255, blue: 182/255, alpha: 1)
             ]
             textField.attributedPlaceholder = NSAttributedString(string: "Адрес", attributes: placeholderAttributes)
-            
+            let image: UIImage = .arrow
+            let rightView = UIImageView(image: image)
+            textField.rightView = rightView
             textField.textColor = .black
+            textField.rightViewMode = .always
             textField.leftViewMode = .always
             textField.text = adress
             return textField
@@ -143,41 +154,105 @@ class CartView: UIView {
             collection.backgroundColor = .white
             collection.delegate = self
             collection.dataSource = self
+            collection.layer.cornerRadius = 10
             collection.showsVerticalScrollIndicator = false
             return collection
         }()
         scrollView.addSubview(collectionView ?? UICollectionView())
         
+        botView = {
+            let view = UIView()
+            view.backgroundColor = .white
+            view.layer.cornerRadius = 10
+            return view
+        }()
+        contentView.addSubview(botView ?? UIView())
+        botView?.snp.makeConstraints({ make in
+            make.left.right.equalToSuperview()
+            make.top.equalTo((collectionView ?? UICollectionView()).snp.bottom).inset(3)
+            make.height.equalTo(155)
+        })
+        
+        secondSeparatorView = {
+            let view = UIView()
+            view.backgroundColor = UIColor(red: 229/255, green: 229/255, blue: 229/255, alpha: 1)
+            return view
+        }()
+        topView?.addSubview(secondSeparatorView ?? UIView())
+        
+        priboriLabel = {
+            let label = UILabel()
+            label.text = "Кол-во приборов"
+            label.font = .systemFont(ofSize: 18, weight: .regular)
+            label.textColor = .black
+            return label
+        }()
+        topView?.addSubview(priboriLabel ?? UIView())
+        
+        
+
+        threeSeparatorView = {
+            let view = UIView()
+            view.backgroundColor = UIColor(red: 229/255, green: 229/255, blue: 229/255, alpha: 1)
+            return view
+        }()
+        topView?.addSubview(threeSeparatorView ?? UIView())
+        
+        commentInOrderTextField = {
+            let textField = UITextField()
+            textField.backgroundColor = .clear
+            textField.textAlignment = .left
+            textField.layer.cornerRadius = 5
+            textField.placeholder = "Комментарий к заказу"
+            textField.delegate = self
+            let placeholderAttributes: [NSAttributedString.Key: Any] = [
+                .foregroundColor: UIColor(.black)
+            ]
+            textField.attributedPlaceholder = NSAttributedString(string: "Комментарий к заказу", attributes: placeholderAttributes)
+            textField.textColor = .black
+            textField.leftViewMode = .always
+            return textField
+        }()
+        topView?.addSubview(commentInOrderTextField ?? UIView())
+        
         if !orderArr.isEmpty {
+            let topViewInView = UIView()
+            topViewInView.backgroundColor = .white
+            botView?.addSubview(topViewInView)
+            topViewInView.snp.makeConstraints { make in
+                make.left.right.equalToSuperview()
+                make.height.equalTo(20)
+                make.top.equalToSuperview().inset(-5)
+            }
             let countText = createOrderCountLabelText(count: orderArr.count)
             countOrderLabel = createLabel(text: countText, color: UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1), font: .systemFont(ofSize: 17, weight: .regular))
-            contentView.addSubview(countOrderLabel ?? UILabel())
+            botView?.addSubview(countOrderLabel ?? UILabel())
             
             var summ = 0
             for i in orderArr {
                 summ += (i.1 * i.3)
             }
             summCountOrderLabel = createLabel(text: "\(summ) ₽", color: UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1), font: .systemFont(ofSize: 17, weight: .regular))
-            contentView.addSubview(summCountOrderLabel ?? UILabel())
+            botView?.addSubview(summCountOrderLabel ?? UILabel())
             
             deliveryLabel = createLabel(text: "Доставка", color: UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1), font: .systemFont(ofSize: 17, weight: .regular))
-            contentView.addSubview(deliveryLabel ?? UILabel())
+            botView?.addSubview(deliveryLabel ?? UILabel())
             
             deliveryOrderLabel = createLabel(text: "\(adressCoast) ₽", color: UIColor(red: 126/255, green: 126/255, blue: 126/255, alpha: 1), font: .systemFont(ofSize: 17, weight: .regular))
-            contentView.addSubview(deliveryOrderLabel ?? UILabel())
+            botView?.addSubview(deliveryOrderLabel ?? UILabel())
             
             botSeparatorView = {
                 let view = UIView()
                 view.backgroundColor = UIColor(red: 229/255, green: 229/255, blue: 229/255, alpha: 1)
                 return view
             }()
-            contentView.addSubview(botSeparatorView ?? UIView())
+            botView?.addSubview(botSeparatorView ?? UIView())
             
             itogLabel = createLabel(text: "Итого", color: .black, font: .systemFont(ofSize: 17, weight: .regular))
-            contentView.addSubview(itogLabel ?? UILabel())
+            botView?.addSubview(itogLabel ?? UILabel())
             
             summLabel = createLabel(text: "\(totalCoast) ₽", color: .black, font: .systemFont(ofSize: 17, weight: .regular))
-            contentView.addSubview(summLabel ?? UILabel())
+            botView?.addSubview(summLabel ?? UILabel())
             
         }
         
@@ -207,7 +282,7 @@ class CartView: UIView {
         
         closeView = {
             let view = UIView()
-            view.backgroundColor = .backElement
+            view.backgroundColor = UIColor(red: 217/255, green: 217/255, blue: 217/255, alpha: 1)
             view.layer.cornerRadius = 2
             return view
         }()
@@ -237,19 +312,19 @@ class CartView: UIView {
         contentView.snp.makeConstraints({ make in
             make.edges.equalToSuperview()
             make.width.equalToSuperview()
-            make.height.equalTo(scrollView.frame.height + CGFloat(orderArr.count * 110))
-        })
-        
-        topView?.snp.makeConstraints({ make in
-            make.left.right.equalToSuperview()
-            make.top.equalTo(scrollView.snp.top).inset(15)
-            make.height.equalTo(100)
+            make.height.equalTo(scrollView.frame.height + CGFloat(orderArr.count * 80))
         })
         
         collectionView?.snp.makeConstraints({ make in
             make.left.right.equalToSuperview()
-            make.height.equalTo(orderArr.count * 100)
-            make.top.equalTo((topView ?? UIView()).snp.bottom).inset(-30)
+            make.height.equalTo(orderArr.count * 80)
+            make.top.equalTo(scrollView.snp.top)
+        })
+        
+        topView?.snp.makeConstraints({ make in
+            make.left.right.equalToSuperview()
+            make.top.equalTo(botView!.snp.bottom).inset(-15)
+            make.height.equalTo(205)
         })
         
         
@@ -262,17 +337,51 @@ class CartView: UIView {
         separatorView?.snp.makeConstraints({ make in
             make.height.equalTo(1)
             make.left.right.equalToSuperview().inset(15)
-            make.centerY.equalToSuperview()
+            make.top.equalTo((phoneTextField ?? UIView()).snp.bottom)
         })
         
         adresTextField?.snp.makeConstraints({ make in
             make.left.right.equalToSuperview().inset(15)
-            make.bottom.equalToSuperview()
+            make.top.equalTo((separatorView ?? UIView()).snp.bottom)
             make.height.equalTo(50)
         })
         
+        secondSeparatorView?.snp.makeConstraints({ make in
+            make.height.equalTo(1)
+            make.left.right.equalToSuperview().inset(15)
+            make.top.equalTo((adresTextField ?? UIView()).snp.bottom)
+        })
     
+        priboriLabel?.snp.makeConstraints({ make in
+            make.left.equalToSuperview().inset(15)
+            make.top.equalTo((secondSeparatorView ?? UIView()).snp.bottom)
+            make.height.equalTo(50)
+        })
         
+        customStepper = {
+            let view = UIView()
+            view.backgroundColor = .backElement
+            view.layer.cornerRadius = 10
+            view.clipsToBounds = true
+            return view
+        }()
+        topView?.addSubview(customStepper ?? UIView())
+        
+        createStepper()
+        
+        threeSeparatorView?.snp.makeConstraints({ make in
+            make.height.equalTo(1)
+            make.left.right.equalToSuperview().inset(15)
+            make.top.equalTo((priboriLabel ?? UIView()).snp.bottom)
+        })
+        
+        commentInOrderTextField?.snp.makeConstraints({ make in
+            make.left.right.equalToSuperview().inset(15)
+            make.top.equalTo(threeSeparatorView!.snp.bottom)
+            make.height.equalTo(50)
+        })
+        
+       
         
         if orderArr.count != 0 {
             countOrderLabel?.snp.makeConstraints { make in
@@ -296,7 +405,7 @@ class CartView: UIView {
             })
             
             botSeparatorView?.snp.makeConstraints({ make in
-                make.left.right.equalTo((collectionView ?? UICollectionView()))
+                make.left.right.equalTo((collectionView ?? UICollectionView())).inset(10)
                 make.height.equalTo(1)
                 make.top.equalTo((deliveryOrderLabel ?? UILabel()).snp.bottom).inset(-15)
             })
@@ -337,12 +446,69 @@ class CartView: UIView {
             make.width.equalTo(50)
             make.height.equalTo(4)
         })
-
+      
+    }
+    
+    
+    
+    
+    
+    func createStepper() {
+        customStepper?.snp.makeConstraints { make in
+            make.height.equalTo(34)
+            make.width.equalTo(103)
+            make.right.equalToSuperview().inset(10)
+            make.centerY.equalTo((priboriLabel ?? UIView()))
+        }
+        let minusButton = createStepperButton(image: .minus)
+        minusButton.addTarget(self, action: #selector(priborMinus), for: .touchUpInside)
+        customStepper?.addSubview(minusButton)
+        minusButton.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(24)
+            make.left.equalToSuperview().inset(10)
+        }
+        
+        let plusButton = createStepperButton(image: .plus)
+        plusButton.addTarget(self, action: #selector(priborPlus), for: .touchUpInside)
+        customStepper?.addSubview(plusButton)
+        plusButton.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(24)
+            make.right.equalToSuperview().inset(10)
+        }
+        
+        priboriCountLabel = {
+            let label = UILabel()
+            label.textColor = .black
+            label.font = .systemFont(ofSize: 20, weight: .regular)
+            label.text = "\(pribori)"
+            return label
+        }()
+        
+        customStepper?.addSubview(priboriCountLabel ?? UILabel())
+        priboriCountLabel?.snp.makeConstraints({ make in
+            make.centerX.centerY.equalToSuperview()
+        })
     }
     
     @objc func changeSegmented() {
         feedbackGeneratorMedium.prepare()
         feedbackGeneratorMedium.impactOccurred()
+    }
+    
+    @objc func priborMinus() {
+        if pribori > 1 {
+            pribori -= 1
+        }
+        priboriCountLabel?.text = "\(pribori)"
+    }
+    
+    @objc func priborPlus() {
+        if pribori < 10 {
+            pribori += 1
+        }
+        priboriCountLabel?.text = "\(pribori)"
     }
     
     @objc func createOrder() {
@@ -411,7 +577,7 @@ class CartView: UIView {
                 menu.append(", ")
             }
         }
-        delegate?.createNewOrder(phonee: phone, menuItems: menu, clientsNumber: 1, adress: adress, totalCost: totalCoast, paymentMethod: "Наличка", timeOrder: "1", cafeID: 2, completion: { success in
+        delegate?.createNewOrder(phonee: phone, menuItems: menu, clientsNumber: pribori, adress: adress, totalCost: totalCoast, paymentMethod: "Наличка", timeOrder: "1", cafeID: 2, completion: { success in
             if success {
                 UserDefaults.standard.setValue(phone, forKey: "phoneKey")
                 UserDefaults.standard.setValue(adress, forKey: "adressKey")
@@ -500,10 +666,10 @@ class CartView: UIView {
         UIView.animate(withDuration: 0.5) { [self] in
             contentView.isUserInteractionEnabled = true
             contentView.snp.updateConstraints({ make in
-                make.height.equalTo(400 + CGFloat(orderArr.count * 110))
+                make.height.equalTo(450 + CGFloat(orderArr.count * 80))
             })
             collectionView?.snp.updateConstraints({ make in
-                make.height.equalTo(orderArr.count * 110)
+                make.height.equalTo(orderArr.count * 80)
             })
             self.layoutIfNeeded()
         }
@@ -525,6 +691,7 @@ class CartView: UIView {
     @objc func hideKeyboard() {
         phoneTextField?.resignFirstResponder()
         adresTextField?.resignFirstResponder()
+        commentInOrderTextField?.resignFirstResponder()
     }
     
     func createStepperButton(image: UIImage) -> UIButton {
@@ -559,6 +726,13 @@ extension CartView: UITextFieldDelegate {
         return true
     }
     
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        if textField == commentInOrderTextField {
+            commentInOrderTextField?.resignFirstResponder()
+        }
+        return true
+    }
+    
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         if textField == phoneTextField {
             let newString = (textField.text as NSString?)?.replacingCharacters(in: range, with: string) ?? string
@@ -578,6 +752,7 @@ extension CartView: UICollectionViewDelegate, UICollectionViewDataSource, UIColl
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "1", for: indexPath)
         cell.subviews.forEach { $0.removeFromSuperview() }
         let array = orderArr[indexPath.row]
+
         
         let imageView: UIImageView = {
             let image = array.2
@@ -588,9 +763,10 @@ extension CartView: UICollectionViewDelegate, UICollectionViewDataSource, UIColl
         }()
         cell.addSubview(imageView)
         imageView.snp.makeConstraints { make in
-            make.height.width.equalTo(90)
-            make.centerY.equalToSuperview()
-            make.left.equalToSuperview()
+            make.height.width.equalTo(60)
+            make.centerY.equalToSuperview().offset(2)
+            make.left.equalToSuperview().inset(10)
+
         }
         
         let labelName: UILabel = {
@@ -619,8 +795,8 @@ extension CartView: UICollectionViewDelegate, UICollectionViewDataSource, UIColl
         customStepper.snp.makeConstraints { make in
             make.height.equalTo(44)
             make.width.equalTo(103)
-            make.right.equalToSuperview()
-            make.bottom.equalToSuperview()
+            make.right.equalToSuperview().inset(10)
+            make.centerY.equalToSuperview()
         }
         
         let minusButton = createStepperButton(image: .minus)
@@ -666,7 +842,7 @@ extension CartView: UICollectionViewDelegate, UICollectionViewDataSource, UIColl
         cell.addSubview(symmLabel)
         symmLabel.snp.makeConstraints { make in
             make.left.equalTo(labelName.snp.left)
-            make.centerY.equalTo(customStepper.snp.centerY)
+            make.bottom.equalToSuperview()
         }
         
         return cell
@@ -677,7 +853,7 @@ extension CartView: UICollectionViewDelegate, UICollectionViewDataSource, UIColl
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: 100)
+        return CGSize(width: collectionView.frame.width, height: 70)
     }
     
 }
