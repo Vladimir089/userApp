@@ -22,6 +22,7 @@ class MainView: UIView {
     var standartView: UIView?
     var blurView: UIView?
     var oneViewForBot, twoViewForBot, threeViewForBot: UIImageView?
+    var blurViewFirst: UIView?
 
     
     //MARK: -Init
@@ -202,12 +203,26 @@ class MainView: UIView {
         }()
         addSubview(collectionView ?? UICollectionView())
         
+//        blurViewFirst = {
+//            let gesture = UITapGestureRecognizer(target: self, action: #selector(showCart))
+//            let blurEffect = UIBlurEffect(style: .extraLight)
+//            let blurView = UIVisualEffectView(effect: blurEffect)
+//            let blurViewFirts = UIView()
+//            blurViewFirts.layer.cornerRadius = 30
+//            blurViewFirts.backgroundColor = UIColor(red: 248/255, green: 102/255, blue: 6/255, alpha: 0.8)
+//            blurViewFirts.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+//            blurViewFirts.clipsToBounds = true
+//            blurViewFirts.addGestureRecognizer(gesture)
+//            return blurViewFirts
+//        }()
+//        addSubview(blurViewFirst ?? UIView())
         blurView = {
             let gesture = UITapGestureRecognizer(target: self, action: #selector(showCart))
-            let blurEffect = UIBlurEffect(style: .light)
-            let blurView = UIVisualEffectView(effect: blurEffect)
+            let blurEffect = UIBlurEffect(style: .extraLight)
+           // let blurView = UIVisualEffectView(effect: blurEffect)
+            let blurView = UIView()
             blurView.layer.cornerRadius = 30
-            blurView.backgroundColor = UIColor(red: 248/255, green: 102/255, blue: 6/255, alpha: 0.6)
+            blurView.backgroundColor = UIColor(red: 248/255, green: 102/255, blue: 6/255, alpha: 0.9)
             blurView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             blurView.clipsToBounds = true
             blurView.addGestureRecognizer(gesture)
@@ -220,26 +235,29 @@ class MainView: UIView {
             button.setTitle("\(totalCoast) ₽", for: .normal)
             button.tintColor = .white
             button.addTarget(self, action: #selector(showCart), for: .touchUpInside)
-            button.titleLabel?.font = .systemFont(ofSize: 20, weight: .semibold)
+            button.titleLabel?.font = .systemFont(ofSize: 24, weight: .bold)
             button.layer.cornerRadius = 30
-            button.clipsToBounds = true // Add this
+            button.clipsToBounds = true
             return button
         }()
         addSubview(showCartButton ?? UIButton())
         
         
-        if let blurEffectView = blurView as? UIVisualEffectView {
+        if let blurEffectView = blurView /*as? UIVisualEffectView*/ {
             
             oneViewForBot = generateImageView()
-            blurEffectView.contentView.addSubview(oneViewForBot ?? UIView())
+            //blurEffectView.contentView.addSubview(oneViewForBot ?? UIView())
+            blurEffectView.addSubview(oneViewForBot ?? UIView())
             
             twoViewForBot = generateImageView()
             twoViewForBot?.alpha = 0
-            blurEffectView.contentView.addSubview(twoViewForBot ?? UIView())
+            //blurEffectView.contentView.addSubview(twoViewForBot ?? UIView())
+            blurEffectView.addSubview(twoViewForBot ?? UIView())
             
             threeViewForBot = generateImageView()
             threeViewForBot?.alpha = 0
-            blurEffectView.contentView.addSubview(threeViewForBot ?? UIView())
+            //blurEffectView.contentView.addSubview(threeViewForBot ?? UIView())
+            blurEffectView.addSubview(threeViewForBot ?? UIView())
         }
     
         
@@ -261,6 +279,12 @@ class MainView: UIView {
             make.bottom.equalToSuperview()
             make.top.equalTo((topCategoriesScrollView ?? UIScrollView()).snp.bottom).inset(-5)
         })
+//        blurViewFirst?.snp.makeConstraints({ make in
+//            make.width.equalTo(180)
+//            make.height.equalTo(60)
+//            make.centerX.equalToSuperview()
+//            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).inset(1225)
+//        })
         
         blurView?.snp.makeConstraints({ make in
             make.width.equalTo(180)
@@ -276,7 +300,7 @@ class MainView: UIView {
         
         oneViewForBot?.snp.makeConstraints({ make in
             make.height.width.equalTo(58)
-            make.right.equalToSuperview().inset(2.5)
+            make.right.equalToSuperview().inset(2)
             make.centerY.equalToSuperview()
         })
         

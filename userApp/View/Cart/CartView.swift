@@ -42,7 +42,15 @@ class CartView: UIView {
         createInterface()
         if let phoneKey = UserDefaults.standard.string(forKey: "phoneKey")  {
             phone = phoneKey
-            phoneTextField?.text = phone
+            if phone.first == "9" {
+                phoneTextField?.text = "+7\(phone)"
+            } else if phone.first == "8" {
+                phone.removeFirst()
+                phone.insert(contentsOf: "+7", at: phone.startIndex)
+                phoneTextField?.text = phone
+            } else {
+                phoneTextField?.text = phone
+            }
         }
         print(adress, phone)
         
@@ -666,7 +674,7 @@ class CartView: UIView {
         UIView.animate(withDuration: 0.5) { [self] in
             contentView.isUserInteractionEnabled = true
             contentView.snp.updateConstraints({ make in
-                make.height.equalTo(450 + CGFloat(orderArr.count * 80))
+                make.height.equalTo(470 + CGFloat(orderArr.count * 80))
             })
             collectionView?.snp.updateConstraints({ make in
                 make.height.equalTo(orderArr.count * 80)
