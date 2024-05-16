@@ -207,33 +207,7 @@ class MainView: UIView {
         }()
         addSubview(collectionView ?? UICollectionView())
         
-//        blurViewFirst = {
-//            let gesture = UITapGestureRecognizer(target: self, action: #selector(showCart))
-//            let blurEffect = UIBlurEffect(style: .extraLight)
-//            let blurView = UIVisualEffectView(effect: blurEffect)
-//            let blurViewFirts = UIView()
-//            blurViewFirts.layer.cornerRadius = 30
-//            blurViewFirts.backgroundColor = UIColor(red: 248/255, green: 102/255, blue: 6/255, alpha: 0.8)
-//            blurViewFirts.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-//            blurViewFirts.clipsToBounds = true
-//            blurViewFirts.addGestureRecognizer(gesture)
-//            return blurViewFirts
-//        }()
-//        addSubview(blurViewFirst ?? UIView())
-        blurView = {
-            let gesture = UITapGestureRecognizer(target: self, action: #selector(showCart))
-            let blurEffect = UIBlurEffect(style: .extraLight)
-           // let blurView = UIVisualEffectView(effect: blurEffect)
-            let blurView = UIView()
-            blurView.layer.cornerRadius = 30
-            blurView.backgroundColor = UIColor(red: 248/255, green: 102/255, blue: 6/255, alpha: 0.9)
-            blurView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            blurView.clipsToBounds = true
-            blurView.addGestureRecognizer(gesture)
-            return blurView
-        }()
-        addSubview(blurView ?? UIView())
-        
+
         showCartButton = {
             let button = UIButton(type: .system)
             button.setTitle("\(totalCoast) ₽", for: .normal)

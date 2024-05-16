@@ -140,8 +140,6 @@ func getTotalCoast(adress: String?, completion: @escaping () -> Void) {
         case .failure(let error):
             print("Request failed with error:", error)
         }
-        
-        // Вызываем замыкание после завершения запроса
         completion()
     }
 }
@@ -155,17 +153,16 @@ func getStatusOrder(orderId: Int, completion: @escaping () -> Void) {
         switch response.result {
         case .success(let data):
             if let data = response.data, let stat = try? JSONDecoder().decode(getStatusToOrderStruct.self, from: data) {
-                print(stat.status)
                 if let statStatus = stat.status {
-                    print(stat.status)
                     orderID["message"] = statStatus
+                    
                 }
             }
         case .failure(_):
             print(2)
         }
-        completion()
     }
+    completion()
 }
 
 

@@ -18,6 +18,7 @@ protocol MainViewControllerDelegate: AnyObject {
     func endScroll()
     func refreshView()
     func hideStatus()
+    func startStatus()
 }
 
 class MainViewController: UIViewController {
@@ -48,9 +49,15 @@ class MainViewController: UIViewController {
         mainView = MainView()
         mainView?.delegate = self
         self.view = mainView
+        refreshView()
+        loadStatus()
+        print(orderID)
+    }
+    
+    func loadStatus() {
         orderView = StatusView()
         orderView?.delegate = self
-        refreshView()
+        
         if let order = UserDefaults.standard.value(forKey: "Order") {
             orderID = order as! [String : Any]
             settingsStatusView()
@@ -58,22 +65,41 @@ class MainViewController: UIViewController {
     }
     
     func settingsStatusView() {
+        if orderID["message"] as! String == "Заказ выполнен" || orderID["message"] as! String == "Заказ отменен" {
+            hideStatus()
+            return
+        }
+            
         view.addSubview(orderView ?? UIView())
         orderView?.layer.cornerRadius = 25
+        print(123123)
+        orderView?.alpha = 0
         orderView?.snp.makeConstraints({ make in
             make.height.equalTo(138)
             make.left.right.equalToSuperview().inset(15)
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(25)
+        })
+        
+        view.setNeedsLayout()
+        view.layoutIfNeeded()
+        UIView.animate(withDuration: 1.0, animations: {
+           self.orderView?.alpha = 1
         })
     }
 }
 
 extension MainViewController: MainViewControllerDelegate {
     func hideStatus() {
+        orderView?.shouldKeepRunning = false
         orderView?.timerLabel?.invalidate()
         orderView?.timerStatus?.invalidate()
         UserDefaults.standard.removeObject(forKey: "Order")
-        orderView?.isHidden = true
+        orderView?.removeFromSuperview()
+        orderView = nil
+    }
+    
+    func startStatus() {
+        loadStatus()
     }
     
     func refreshView() {

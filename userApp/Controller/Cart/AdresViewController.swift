@@ -120,7 +120,7 @@ class AdresViewController: UIViewController {
     
     @objc func closeBut() {
         adressTextField?.resignFirstResponder()
-        delegate?.closeVC(text: adressTextField?.text ?? "")
+        delegate?.closeVC(text: adress)
         dismiss(animated: true, completion: nil)
     }
     
@@ -147,9 +147,7 @@ extension AdresViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         adressTextField?.resignFirstResponder()
         dismiss(animated: true, completion: nil)
-        let text = adressTextField?.text ?? ""
-        print(text)
-        delegate?.closeVC(text: text)
+        delegate?.closeVC(text: adress)
         return true
     }
     

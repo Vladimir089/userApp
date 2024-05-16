@@ -8,7 +8,8 @@
 import UIKit
 
 class StatusView: UIView {
-
+    
+    var shouldKeepRunning = true
     var timeLabel: UILabel?
     var statusLabel: UILabel?
     var timerLabel: Timer?
@@ -22,8 +23,19 @@ class StatusView: UIView {
     override init(frame: CGRect) {
         super .init(frame: frame)
         createElement()
-        timerLabel = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(fullTime), userInfo: nil, repeats: true)
-        timerStatus = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(seeStatus), userInfo: nil, repeats: true)
+        seeStatus()
+        DispatchQueue.global().async { [weak self] in
+               self?.timerLabel = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+                   DispatchQueue.main.async {
+                       self?.fullTime()
+                   }
+                   if !(self?.shouldKeepRunning ?? false) {
+                       CFRunLoopStop(CFRunLoopGetCurrent())
+                   }
+               }
+               RunLoop.current.run()
+           }
+        timerStatus = Timer.scheduledTimer(timeInterval: 30, target: self, selector: #selector(seeStatus), userInfo: nil, repeats: true)
 
     }
     
@@ -56,6 +68,7 @@ class StatusView: UIView {
             button.layer.cornerRadius = 22.5
             button.setImage(.phone, for: .normal)
             button.tintColor = .white
+            button.addTarget(self, action: #selector(callToCafe), for: .touchUpInside)
             return button
         }()
         addSubview(callButton ?? UIView())
@@ -95,7 +108,6 @@ class StatusView: UIView {
             label.textColor = .white
             label.textAlignment = .left
             label.numberOfLines = 2
-            label.text = orderID["message"] as? String
             return label
         }()
         addSubview(statusLabel ?? UILabel())
@@ -107,7 +119,18 @@ class StatusView: UIView {
         
     }
     
-
+    @objc func callToCafe() {
+        let phoneNumber = "+79283550302"
+        guard let callURL = URL(string: "tel://\(phoneNumber)") else {
+            return
+        }
+        
+        if UIApplication.shared.canOpenURL(callURL) {
+            UIApplication.shared.open(callURL, options: [:], completionHandler: nil)
+        } else {
+            print("Не удалось совершить звонок")
+        }
+    }
     
     @objc func fullTime() {
         if let orderDate = orderID["date"] as? Date {
@@ -116,18 +139,16 @@ class StatusView: UIView {
             let hours = Int(elapsed) / 3600
             let mins = Int(elapsed) / 60 % 60
             let secs = Int(elapsed) % 60
-            
-            UIView.transition(with: timeLabel!,
-                              duration: 0.2,
-                              options: .transitionCrossDissolve,
-                              animations: { [weak self] in
+
+            DispatchQueue.main.async { [weak self] in
                 if hours == 0 {
                     self?.timeLabel?.text = String(format: "%02i:%02i", mins, secs )
                 } else {
                     self?.timeLabel?.text = String(format: "%02i:%02i:%02i", hours, mins, secs )
                 }
-            },
-                              completion: nil)
+            }
+            
+            
         }
     }
     
@@ -139,22 +160,25 @@ class StatusView: UIView {
     }
     
     @objc func seeStatus() {
-        print(orderID["message"])
+
         getStatusOrder(orderId: orderID["orderId"] as? Int ?? 1, completion: {
-            if let message = orderID["message"] as? String {
-                let words = message.split(separator: " ")
-                if orderID["message"] as! String != "Начинаем готовить Ваш заказ..." && words.first != "Встречайте" {
-                    self.middleCoocingView?.backgroundColor = UIColor(red: 248/255, green: 102/255, blue: 6/255, alpha: 1)
-                    self.statusLabel?.text = orderID["message"] as? String
-                }
-                if words.first == "Встречайте" {
-                    self.finishCookingView?.backgroundColor = UIColor(red: 248/255, green: 102/255, blue: 6/255, alpha: 1)
-                }
-                if orderID["message"] as! String == "Заказ завершен" || orderID["message"] as! String == "Заказ отменен" {
-                    self.delegate?.hideStatus()
-                }
-                
+            
+            if orderID["message"] as! String == "Начинаем готовить Ваш заказ..." {
+                self.statusLabel?.text = "Начинаем готовить Ваш заказ..."
+                self.startCookingOrderView?.backgroundColor = UIColor(red: 248/255, green: 102/255, blue: 6/255, alpha: 1)
             }
+            if orderID["message"] as! String == "В исполнении" {
+                self.statusLabel?.text = "Передаём заказ курьеру..."
+                self.middleCoocingView?.backgroundColor = UIColor(red: 248/255, green: 102/255, blue: 6/255, alpha: 1)
+            }
+            if orderID["message"] as! String != "В исполнении" && orderID["message"] as! String != "Начинаем готовить Ваш заказ..." {
+                self.statusLabel?.text = orderID["message"] as? String
+                self.finishCookingView?.backgroundColor = UIColor(red: 248/255, green: 102/255, blue: 6/255, alpha: 1)
+            }
+            if orderID["message"] as! String == "Заказ выполнен" || orderID["message"] as! String == "Заказ отменен" {
+                self.delegate?.hideStatus()
+            }
+            
         })
     }
     

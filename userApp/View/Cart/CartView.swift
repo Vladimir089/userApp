@@ -597,6 +597,10 @@ class CartView: UIView {
                 }
                 self.feedbackGenerator.prepare()
                 self.feedbackGenerator.notificationOccurred(.success)
+                orderID = ["orderId": idd, "date": Date.now, "message": "Начинаем готовить Ваш заказ..."]
+                UserDefaults.standard.set(orderID, forKey: "Order")
+                print(orderID)
+                self.delegate?.deinitSelfVC()
             } else {
                 self.createOrderButton?.isUserInteractionEnabled = false
                 self.feedbackGenerator.prepare()

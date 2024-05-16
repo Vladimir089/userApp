@@ -9,6 +9,7 @@ import UIKit
 import Alamofire
 
 var orderArr = [(String, Int, UIImage, Int)]()
+var idd = 0
  
 protocol CartViewControllerDelegate: AnyObject {
     func showAdresVC()
@@ -17,6 +18,7 @@ protocol CartViewControllerDelegate: AnyObject {
     func reloadLabels(adress: String)
     func createNewOrder(phonee: String, menuItems: String, clientsNumber: Int, adress: String, totalCost: Int, paymentMethod: String, timeOrder: String, cafeID: Int, completion: @escaping (Bool) -> Void)
     func clearAdressText()
+    func deinitSelfVC()
 }
 
 class CartViewController: UIViewController {
@@ -66,6 +68,11 @@ class CartViewController: UIViewController {
 }
 
 extension CartViewController: CartViewControllerDelegate {
+    func deinitSelfVC() {
+        self.delegate?.startStatus()
+        self.dismiss(animated: true)
+    }
+    
     func clearAdressText() {
         mainView?.adresTextField?.text = nil
     }
@@ -100,8 +107,7 @@ extension CartViewController: CartViewControllerDelegate {
             case .success(let data):
                 if let jsonData = data as? [String: Any] {
                     if let orderId = jsonData["order_id"] as? Int {
-                        orderID = ["orderId": orderId, "date": Date.now, "message": "Начинаем готовить Ваш заказ..."]
-                        UserDefaults.standard.set(orderID, forKey: "Order")
+                        idd = orderId
                         completion(true)
                     } else {
                         completion(false)
