@@ -165,7 +165,7 @@ extension MainViewController: MainViewControllerDelegate {
         if !orderArr.isEmpty {
             let index = orderArr.count
             
-            for i in 0..<orderArr.count {
+            for _ in 0..<orderArr.count {
                 UIView.animate(withDuration: 0.5) { [self] in
                     
                     if orderArr.count == 3  {
