@@ -1,10 +1,3 @@
-//
-//  AdresViewController.swift
-//  userApp
-//
-//  Created by Владимир Кацап on 02.05.2024.
-//
-
 import UIKit
 
 var adress = ""

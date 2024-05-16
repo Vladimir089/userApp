@@ -52,7 +52,6 @@ class CartView: UIView {
                 phoneTextField?.text = phone
             }
         }
-        print(adress, phone)
         
     }
     

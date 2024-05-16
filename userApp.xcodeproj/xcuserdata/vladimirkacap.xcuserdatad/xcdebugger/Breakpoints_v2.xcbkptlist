@@ -14,8 +14,8 @@
             filePath = "userApp/View/MainView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "80"
-            endingLineNumber = "80"
+            startingLineNumber = "82"
+            endingLineNumber = "82"
             landmarkName = "createError()"
             landmarkType = "7">
          </BreakpointContent>
@@ -30,8 +30,8 @@
             filePath = "userApp/View/Cart/CartView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "201"
-            endingLineNumber = "201"
+            startingLineNumber = "200"
+            endingLineNumber = "200"
             landmarkName = "createInterface()"
             landmarkType = "7">
             <Locations>
@@ -78,8 +78,8 @@
             filePath = "userApp/View/Cart/CartView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "393"
-            endingLineNumber = "393"
+            startingLineNumber = "392"
+            endingLineNumber = "392"
             landmarkName = "createContraints()"
             landmarkType = "7">
             <Locations>

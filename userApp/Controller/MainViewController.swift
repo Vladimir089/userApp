@@ -17,6 +17,7 @@ protocol MainViewControllerDelegate: AnyObject {
     func updateSelectedCategoryButton(with category: String)
     func endScroll()
     func refreshView()
+    func hideStatus()
 }
 
 class MainViewController: UIViewController {
@@ -25,7 +26,7 @@ class MainViewController: UIViewController {
     var isLoad = false
     let feedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
     var prevButton: UIButton?
-    
+    var orderView: StatusView?
     
     
     override func viewWillAppear(_ animated: Bool) {
@@ -47,11 +48,34 @@ class MainViewController: UIViewController {
         mainView = MainView()
         mainView?.delegate = self
         self.view = mainView
+        orderView = StatusView()
+        orderView?.delegate = self
         refreshView()
+        if let order = UserDefaults.standard.value(forKey: "Order") {
+            orderID = order as! [String : Any]
+            settingsStatusView()
+        }
+    }
+    
+    func settingsStatusView() {
+        view.addSubview(orderView ?? UIView())
+        orderView?.layer.cornerRadius = 25
+        orderView?.snp.makeConstraints({ make in
+            make.height.equalTo(138)
+            make.left.right.equalToSuperview().inset(15)
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(25)
+        })
     }
 }
 
 extension MainViewController: MainViewControllerDelegate {
+    func hideStatus() {
+        orderView?.timerLabel?.invalidate()
+        orderView?.timerStatus?.invalidate()
+        UserDefaults.standard.removeObject(forKey: "Order")
+        orderView?.isHidden = true
+    }
+    
     func refreshView() {
         getDishes { error in
             if error == nil {

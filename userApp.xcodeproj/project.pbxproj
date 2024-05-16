@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1508577B2BF647F2004DD655 /* StatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1508577A2BF647F2004DD655 /* StatusView.swift */; };
 		15D133582BE3E19200BF671D /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D133572BE3E19200BF671D /* MainViewController.swift */; };
 		15D1335A2BE3E25900BF671D /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D133592BE3E25900BF671D /* MainView.swift */; };
 		15D1335C2BE3E8FF00BF671D /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D1335B2BE3E8FF00BF671D /* Data.swift */; };
@@ -26,6 +27,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1508577A2BF647F2004DD655 /* StatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusView.swift; sourceTree = "<group>"; };
 		15D133572BE3E19200BF671D /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		15D133592BE3E25900BF671D /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		15D1335B2BE3E8FF00BF671D /* Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
@@ -117,6 +119,7 @@
 			children = (
 				15D133662BE41BC300BF671D /* Cart */,
 				15D133592BE3E25900BF671D /* MainView.swift */,
+				1508577A2BF647F2004DD655 /* StatusView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -224,6 +227,7 @@
 			files = (
 				15D1336D2BE91EBD00BF671D /* SectionHeaderView.swift in Sources */,
 				15D133692BE41BE100BF671D /* CartView.swift in Sources */,
+				1508577B2BF647F2004DD655 /* StatusView.swift in Sources */,
 				15D1335E2BE3E93800BF671D /* NewWorking.swift in Sources */,
 				15D133582BE3E19200BF671D /* MainViewController.swift in Sources */,
 				15D1335C2BE3E8FF00BF671D /* Data.swift in Sources */,

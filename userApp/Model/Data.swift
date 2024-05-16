@@ -7,6 +7,8 @@
 
 import Foundation
 
+var orderID = ["orderId": Int(), "date": Date(), "message": "Начинаем готовить Ваш заказ..."] as [String : Any]
+
 struct Dish: Codable {
     let id: Int
     let name: String
@@ -23,3 +25,5 @@ enum methodButton {
     case plus
     case minus
 }
+
+

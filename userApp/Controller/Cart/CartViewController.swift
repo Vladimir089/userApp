@@ -95,12 +95,18 @@ extension CartViewController: CartViewControllerDelegate {
             "cafe_id": cafeID
         ]
         
-        AF.request("http://arbamarket.ru/api/v1/main/create_order/", method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: headers).response { response in
-
-            print(response)
+        AF.request("http://arbamarket.ru/api/v1/main/create_order/", method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: headers).responseJSON { response in
             switch response.result {
-            case .success(_):
-                completion(true)
+            case .success(let data):
+                if let jsonData = data as? [String: Any] {
+                    if let orderId = jsonData["order_id"] as? Int {
+                        orderID = ["orderId": orderId, "date": Date.now, "message": "Начинаем готовить Ваш заказ..."]
+                        UserDefaults.standard.set(orderID, forKey: "Order")
+                        completion(true)
+                    } else {
+                        completion(false)
+                    }
+                }
             case .failure(_):
                 completion(false)
             }

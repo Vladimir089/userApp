@@ -24,6 +24,7 @@ class MainView: UIView {
     var oneViewForBot, twoViewForBot, threeViewForBot: UIImageView?
     var blurViewFirst: UIView?
 
+
     
     //MARK: -Init
 
@@ -35,6 +36,7 @@ class MainView: UIView {
         if let adresKey = UserDefaults.standard.string(forKey: "adressKey")  {
             adress = adresKey
         }
+       
     }
     
     required init?(coder: NSCoder) {
@@ -178,6 +180,8 @@ class MainView: UIView {
     
     
     func createElement() {
+        
+        
         topCategoriesScrollView = {
             let scroll = UIScrollView()
             scroll.showsVerticalScrollIndicator = false
@@ -267,6 +271,7 @@ class MainView: UIView {
     //MARK: -Set constraints
     
     func createConstraints() {
+        
         
         topCategoriesScrollView?.snp.makeConstraints({ make in
             make.height.equalTo(42)
