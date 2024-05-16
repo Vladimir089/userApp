@@ -36,7 +36,6 @@ class StatusView: UIView {
                RunLoop.current.run()
            }
         timerStatus = Timer.scheduledTimer(timeInterval: 30, target: self, selector: #selector(seeStatus), userInfo: nil, repeats: true)
-
     }
     
     required init?(coder: NSCoder) {
