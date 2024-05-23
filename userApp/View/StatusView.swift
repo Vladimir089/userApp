@@ -139,7 +139,7 @@ class StatusView: UIView {
     }
     
     @objc func callToCafe() {
-        let phoneNumber = "+79283550302"
+        let phoneNumber = "+79380312109"
         guard let callURL = URL(string: "tel://\(phoneNumber)") else {
             return
         }
@@ -191,7 +191,7 @@ class StatusView: UIView {
                 
             }
             
-            if orderID["message"] as! String == "В исполнении" {
+            if orderID["message"] as! String == "Курьер назначен" {
                 self.statusLabel?.text = "Передаём заказ курьеру..."
                 if !self.viewsArray.contains(self.middleCoocingView ?? UIView()) {
                     self.viewsArray.append(self.middleCoocingView ?? UIView())
@@ -200,8 +200,8 @@ class StatusView: UIView {
                 }
                 
             }
-            
-            if orderID["message"] as! String != "В исполнении" && orderID["message"] as! String != "Начинаем готовить Ваш заказ..." {
+
+            if orderID["message"] as! String != "Курьер назначен" && orderID["message"] as! String != "Начинаем готовить Ваш заказ..." && self.middleCoocingView?.backgroundColor != UIColor(red: 51/255, green: 61/255, blue: 73/255, alpha: 1)  {
                 self.statusLabel?.text = orderID["message"] as? String
                 if !self.viewsArray.contains(self.finishCookingView ?? UIView()) {
                     self.viewsArray.append(self.finishCookingView ?? UIView())

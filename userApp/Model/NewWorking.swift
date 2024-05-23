@@ -150,12 +150,13 @@ func getStatusOrder(orderId: Int, completion: @escaping () -> Void) {
         HTTPHeader.authorization(bearerToken: token)]
     
     AF.request("http://arbamarket.ru/api/v1/main/get_status_by_order_id/?order_id=\(orderId)&cafe_id=\(cafeID)", method: .get, headers: headers).responseJSON { response in
+
         switch response.result {
-        case .success(let data):
+        case .success(_):
             if let data = response.data, let stat = try? JSONDecoder().decode(getStatusToOrderStruct.self, from: data) {
                 if let statStatus = stat.status {
                     orderID["message"] = statStatus
-                    
+                    print("статус -", stat.status)
                 }
             }
         case .failure(_):
